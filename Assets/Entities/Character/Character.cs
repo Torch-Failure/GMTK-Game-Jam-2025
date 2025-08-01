@@ -3,6 +3,8 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     [SerializeField]
+    private AttackComponent attackComponent;
+    [SerializeField]
     private float speed = 10f;
     [SerializeField]
     private float maxHealth = 100f;
@@ -13,18 +15,6 @@ public class Character : MonoBehaviour
     public float MaxHealth { get { return maxHealth; } }
     public float CurrentHealth { get { return currentHealth; } }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void Move(Vector2 direction)
     {
         transform.Translate(direction.normalized * speed * Time.deltaTime);
@@ -33,5 +23,10 @@ public class Character : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
+    }
+
+    public virtual void Attack()
+    {
+        attackComponent.Attack(transform.rotation);
     }
 }

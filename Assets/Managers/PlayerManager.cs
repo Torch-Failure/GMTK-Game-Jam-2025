@@ -7,11 +7,13 @@ public class PlayerManager : MonoBehaviour
     private struct PlayerInputRecord
     {
         public Vector2 move;
+        public Quaternion rotation;
         public bool doesAttack;
-        public bool doesInteract;
     }
 
     private InputAction moveAction;
+    private InputAction attackAction;
+    private InputAction pointAction;
 
     [SerializeField]
     private Character playerPrefab;
@@ -24,6 +26,8 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
+        attackAction = InputSystem.actions.FindAction("Attack");
+        pointAction = InputSystem.actions.FindAction("Point");
     }
 
     public void PlayNextCharacter() {
@@ -41,16 +45,30 @@ public class PlayerManager : MonoBehaviour
 
     public void InternalUpdate()
     {
+        if (attackAction.WasPressedThisFrame()) {
+            currentPlayer.Attack();
+            var currentHistory = inputHistory[inputHistory.Count - 1];
+            var lastRecord = currentHistory[currentHistory.Count - 1];
+            lastRecord.doesAttack = true;
+            currentHistory[currentHistory.Count - 1] = lastRecord;
+        }
+    }
+
+    public void InternalFixedUpdate()
+    {
         PlayerInputRecord inputRecord = new();
         
         var m = moveAction.ReadValue<Vector2>();
         currentPlayer.Move(m);
         inputRecord.move = m;
+        inputRecord.rotation = currentPlayer.transform.rotation;
         
         for (int i = 0; i < previousPlayers.Count; i++)
         {
             if (currentFrame >= inputHistory[i].Count) continue;
+            previousPlayers[i].transform.rotation = inputHistory[i][currentFrame].rotation;
             previousPlayers[i].Move(inputHistory[i][currentFrame].move);
+            if (inputHistory[i][currentFrame].doesAttack) previousPlayers[i].Attack();
         }
 
         if (inputHistory.Count == 0) {

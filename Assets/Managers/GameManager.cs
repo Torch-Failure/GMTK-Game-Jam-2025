@@ -64,37 +64,38 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("MainMenu");
         currentState = GameState.GameSetup;
+        Debug.Log("Game Setup");
     }
 
     void GameSetup()
     {
-        Debug.Log("Game Setup");
         playerManager.PlayNextCharacter();
         currentState = GameState.Gameplay;
+        Debug.Log("Gameplay");
     }
 
 
     void Gameplay()
     {
-        Debug.Log("Gameplay");
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Pause;
+            Debug.Log("Pause");
         } 
         else if (replayAction.WasPressedThisFrame()) // Temp debug action.
         {
             playerManager.PlayNextCharacter();
         }
+        playerManager.InternalUpdate();
     }
 
     void GameplayFixedUpdate()
     {
-        playerManager.InternalUpdate();
+        playerManager.InternalFixedUpdate();
     }
 
     void Pause()
     {
-        Debug.Log("Pause");
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Gameplay;
