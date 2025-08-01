@@ -61,6 +61,14 @@ public class PlayerManager : MonoBehaviour
         var m = moveAction.ReadValue<Vector2>();
         currentPlayer.Move(m);
         inputRecord.move = m;
+
+        // Face towards point
+        Vector2 screenPoint = pointAction.ReadValue<Vector2>();
+        Vector2 point = Camera.main.ScreenToWorldPoint(screenPoint);
+        Vector2 playerPos = currentPlayer.transform.position;
+        Vector2 direction = point - playerPos;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        currentPlayer.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
         inputRecord.rotation = currentPlayer.transform.rotation;
         
         for (int i = 0; i < previousPlayers.Count; i++)

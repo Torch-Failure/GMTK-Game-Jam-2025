@@ -17,7 +17,7 @@ public class Character : MonoBehaviour
 
     public void Move(Vector2 direction)
     {
-        transform.Translate(direction.normalized * speed * Time.deltaTime);
+        transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
     }
 
     public void TakeDamage(float damage)
