@@ -14,20 +14,14 @@ public class GameManager : MonoBehaviour
     public GameState currentState;
     
     private InputAction pauseAction;
-    private InputAction moveAction;
 
     [SerializeField]
-    private Character playerPrefab;
-    private Character player;
-
-
+    private PlayerManager playerManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         pauseAction = InputSystem.actions.FindAction("Pause");
-        moveAction = InputSystem.actions.FindAction("Move");
-        player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
     }
 
     // Update is called once per frame
@@ -63,7 +57,7 @@ public class GameManager : MonoBehaviour
         {
             currentState = GameState.Pause;
         }
-        player.Move(moveAction.ReadValue<Vector2>());
+        playerManager.InternalUpdate();
     }
 
     void Pause()
