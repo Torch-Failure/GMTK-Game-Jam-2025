@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public enum GameState
 {
     MainMenu,
+    GameSetup,
     Gameplay,
     Pause,
     GameOver
@@ -14,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameState currentState;
     
     private InputAction pauseAction;
+    private InputAction replayAction;
 
     [SerializeField]
     private PlayerManager playerManager;
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         pauseAction = InputSystem.actions.FindAction("Pause");
+        replayAction = InputSystem.actions.FindAction("Replay");
     }
 
     // Update is called once per frame
@@ -31,6 +34,9 @@ public class GameManager : MonoBehaviour
         {
             case GameState.MainMenu:
                 MainMenu();
+                break;
+            case GameState.GameSetup:
+                GameSetup();
                 break;
             case GameState.Gameplay:
                 Gameplay();
@@ -47,8 +53,16 @@ public class GameManager : MonoBehaviour
     void MainMenu()
     {
         Debug.Log("MainMenu");
+        currentState = GameState.GameSetup;
+    }
+
+    void GameSetup()
+    {
+        Debug.Log("Game Setup");
+        playerManager.PlayNextCharacter();
         currentState = GameState.Gameplay;
     }
+
 
     void Gameplay()
     {
@@ -56,6 +70,10 @@ public class GameManager : MonoBehaviour
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Pause;
+        } 
+        else if (replayAction.WasPressedThisFrame()) // Temp debug action.
+        {
+            playerManager.PlayNextCharacter();
         }
         playerManager.InternalUpdate();
     }
