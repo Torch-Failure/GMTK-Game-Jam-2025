@@ -43,8 +43,9 @@ public class PlayerManager : MonoBehaviour
     {
         PlayerInputRecord inputRecord = new();
         
-        currentPlayer.Move(moveAction.ReadValue<Vector2>());
-        inputRecord.move = moveAction.ReadValue<Vector2>();
+        var m = moveAction.ReadValue<Vector2>();
+        currentPlayer.Move(m);
+        inputRecord.move = m;
         
         for (int i = 0; i < previousPlayers.Count; i++)
         {

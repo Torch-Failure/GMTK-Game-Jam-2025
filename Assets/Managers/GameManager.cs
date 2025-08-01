@@ -50,6 +50,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void FixedUpdate()
+    {
+        switch (currentState)
+        {
+            case GameState.Gameplay:
+                GameplayFixedUpdate();
+                break;
+        }
+    }
+
     void MainMenu()
     {
         Debug.Log("MainMenu");
@@ -75,6 +85,10 @@ public class GameManager : MonoBehaviour
         {
             playerManager.PlayNextCharacter();
         }
+    }
+
+    void GameplayFixedUpdate()
+    {
         playerManager.InternalUpdate();
     }
 
