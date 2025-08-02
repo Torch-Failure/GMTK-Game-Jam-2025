@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using UnityEditor;
+using Unity.VisualScripting;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,13 +15,8 @@ public class PlayerManager : MonoBehaviour
     }
 
     // Stores history of one character for the current loop
-    private struct CharacterThread
+    private class CharacterThread
     {
-        // Some space for history
-        // Starting time
-        // Current time we are up to
-        // Dead or not dead?
-        // Update when active
         public List<PlayerInputRecord> history;
         
         // How much time has been played out in this thread
@@ -44,6 +41,13 @@ public class PlayerManager : MonoBehaviour
         {
             history.Clear();
             threadTicks = 0;
+        }
+
+        // Returns true if this thread can be selected in a character selection phase
+        // First implementation, if thread ticks are zero?
+        public bool CanActivate()
+        {
+            return threadTicks == 0;
         }
     }
 
@@ -78,6 +82,25 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    // Helper class for rendering active character in red
+    private class ActiveThread
+    {
+        private CharacterThread _activeThread;
+        public CharacterThread activeThread
+        {
+            get  => _activeThread;
+            set
+            {
+                if (_activeThread != null)
+                {
+                    _activeThread.threadCharacter.GetComponent<SpriteRenderer>().color = Color.white;
+                }
+                value.threadCharacter.GetComponent<SpriteRenderer>().color = Color.red;
+                _activeThread = value;
+            }
+        }
+    }
+
     private InputAction moveAction;
     private InputAction attackAction;
     private InputAction pointAction;
@@ -92,12 +115,21 @@ public class PlayerManager : MonoBehaviour
     public int numberOfCharacters = 4;
     private List<CharacterThread> characterThreads = new();
     
-    // That the player is currently playing
-    private CharacterThread activeThread; 
+    // Thread that the player is currently playing
+    private ActiveThread activeThreadContainer = new();
+    
+    // Helper helper class for rendering character in red
+    private CharacterThread  activeThread 
+    {
+        get => activeThreadContainer.activeThread;
+        set => activeThreadContainer.activeThread = value; 
+    }
+
     private Character currentPlayer => activeThread.threadCharacter;
 
-    // Temp before player selection
-    private int currentPlayerIndex = 0;
+    // Used for character selection:
+    private int selectedCharacterIndex = 0;
+    public bool isCharacterSelected {get; private set;} = false;
 
     void Start()
     {
@@ -133,7 +165,7 @@ public class PlayerManager : MonoBehaviour
         loopStartState.LoadState(characterThreads);
     }
 
-    public void InternalUpdate()
+    public void ThreadPlayingUpdate()
     {
         if (attackAction.WasPressedThisFrame()) {
             currentPlayer.Attack();
@@ -146,10 +178,45 @@ public class PlayerManager : MonoBehaviour
 
     public void CharacterSelectionUpdate()
     {
+        // Check validity
+        var activatableThreads = GetActivatableThreads();        
+        if (activatableThreads.Count == 0)
+        {
+            throw new InvalidOperationException("Should not be in character selection state if no selectable characters");
+        }
 
+        // Update selection from inputs
+        if (cycleNextAction.WasPressedThisFrame())
+        {
+            selectedCharacterIndex++;
+        }
+
+        if (cyclePreviousAction.WasPressedThisFrame())
+        {
+            selectedCharacterIndex--;
+        }
+        
+        // Wrap index around
+        if (selectedCharacterIndex >= activatableThreads.Count)
+        {
+            selectedCharacterIndex = 0;
+        }
+
+        if (selectedCharacterIndex < 0)
+        {
+            selectedCharacterIndex = activatableThreads.Count - 1;
+        }
+
+        // Apply selection
+        activeThread = activatableThreads[selectedCharacterIndex];
+
+        if (selectAction.WasPressedThisFrame())
+        {
+            isCharacterSelected = true;
+        }
     }
 
-    public void ThreadPlayingUpdate(int loopTick)
+    public void ThreadPlayingFixedUpdate(int loopTick)
     {
         PlayerInputRecord inputRecord = new();
         
@@ -170,13 +237,16 @@ public class PlayerManager : MonoBehaviour
         // Play out history of other characters
         for (int i = 0; i < numberOfCharacters; i++)
         {
+            var thread = characterThreads[i];
+
             // Don't play out history of active character
             // This is kind of ugly
-            if (i == currentPlayerIndex) continue;
+            if (thread == activeThread) continue;
 
-            var inputHistory = characterThreads[i].history;
-            var character = characterThreads[i].threadCharacter;
+            var inputHistory = thread.history;
+            var character = thread.threadCharacter;
 
+            // Don't play out past history we have saved
             if (loopTick >= inputHistory.Count) continue;
             character.transform.rotation = inputHistory[loopTick].rotation;
             character.Move(inputHistory[loopTick].move);
@@ -186,10 +256,44 @@ public class PlayerManager : MonoBehaviour
     
     public void RestartLoop()
     {
-        // Temp before selecting characters
-        currentPlayerIndex++;
-        currentPlayerIndex %= numberOfCharacters;
-        activeThread = characterThreads[currentPlayerIndex];
-        activeThread.Reset(); // Temp before proper advacning to next loop
+        isCharacterSelected = false;
+
+        // Anything else  needs to be done here now?
+    }
+
+    public void IncrementLoop()
+    {
+        for (int i = 0; i < characterThreads.Count; i++)
+        {
+            var thread  = characterThreads[i];
+            
+            // Smoother experience by maintaining selection between loops
+            if (thread == activeThread)
+            {
+                selectedCharacterIndex = i;
+            }
+
+            thread.Reset();
+        }
+    }
+
+    private List<CharacterThread> GetActivatableThreads()
+    {
+        List<CharacterThread> activatableThreads = new();
+        foreach (var thread in characterThreads)
+        {
+            if (thread.CanActivate())
+            {
+                activatableThreads.Add(thread);
+            }
+        }
+        return activatableThreads;
+    }
+
+    // Returns true if any player can be activated
+    // Used by loop manager to decide whether to advance to next loop
+    public bool CanActivateCharacter()
+    {
+        return GetActivatableThreads().Count > 0;
     }
 }
