@@ -125,7 +125,11 @@ public class PlayerManager : MonoBehaviour
         set => activeThreadContainer.activeThread = value; 
     }
 
-    private Character currentPlayer => activeThread.threadCharacter;
+    public Character currentPlayer 
+    {
+        get => activeThread.threadCharacter;
+        private set => activeThread.threadCharacter = value;
+    }
 
     // Used for character selection:
     private int selectedCharacterIndex = 0;
@@ -151,6 +155,9 @@ public class PlayerManager : MonoBehaviour
 
         loopStartState.characterPositions = new();
         loopStartState.characterRotations = new();
+
+        // Ensure this is not null before first fixed update
+        activeThread = characterThreads[selectedCharacterIndex];
 
         SaveLoopStart();
     }
