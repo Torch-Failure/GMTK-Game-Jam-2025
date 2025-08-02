@@ -19,7 +19,10 @@ public class LoopManager : MonoBehaviour
         // Restores everything to where it was at the start of the loop
         // Player history should be preserved
         public void RestartLoop()
-        {
+        {   
+            // This can eventually operate on a list of common interfaces/super classes
+            playerManager.LoadLoopStart();
+
             // Should reset loop on every manager or entity
             playerManager.RestartLoop();
         
@@ -65,5 +68,6 @@ public class LoopManager : MonoBehaviour
         // Will move to next loop
         void IncrementLoop()
         {
+            playerManager.SaveLoopStart();
         }
 }
