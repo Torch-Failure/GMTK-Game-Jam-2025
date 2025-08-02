@@ -2,8 +2,16 @@ using UnityEngine;
 
 public class RangedAttackComponent : AttackComponent
 {
-    public override void Attack(Quaternion direction) {
+    [SerializeField]
+    private GameObject projectile;
+
+    [SerializeField]
+    private Transform projectileSpawnPosition;
+    public override void Attack(Quaternion direction)
+    {
         Debug.Log("Attack direction: " + direction.eulerAngles);
-        // Spawn a projectile and then launch it in the direction.
+        GameObject currentProjectile = Instantiate(projectile, projectileSpawnPosition.position, projectileSpawnPosition.rotation);
+        Rigidbody2D rb = currentProjectile.GetComponent<Rigidbody2D>();
+        rb.AddForce(currentProjectile.transform.up * 500f);
     }
 }
