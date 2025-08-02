@@ -26,7 +26,7 @@ public class Projectile : MonoBehaviour
 
         Character character =  collision.gameObject.GetComponent<Character>();
 
-        if (character != null)
+        if (character != null && this.tag != character.tag)
         {
             Debug.Log("Hit something");
             character.TakeDamage(damage);

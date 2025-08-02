@@ -10,5 +10,6 @@ public class RangedAttackComponent : AttackComponent
     public override void Attack(Quaternion direction)
     {
         GameObject currentProjectile = Instantiate(projectile, projectileSpawnPosition.position, projectileSpawnPosition.rotation);
+        currentProjectile.tag = transform.parent.gameObject.tag;
     }
 }
