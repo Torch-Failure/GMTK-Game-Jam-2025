@@ -152,37 +152,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!1 &5647007363620322012
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 173898973287151771}
-  m_Layer: 0
-  m_Name: ProjectSpawnPosition
-  m_TagString: Untagged
-  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &173898973287151771
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5647007363620322012}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.987, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4616931649343461090}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1562180996654529000
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -202,7 +171,7 @@ PrefabInstance:
     - target: {fileID: 6072833056684865239, guid: e34efd1f298df4dd9a3b69621ce5afc3, type: 3}
       propertyPath: projectileSpawnPosition
       value: 
-      objectReference: {fileID: 173898973287151771}
+      objectReference: {fileID: 0}
     - target: {fileID: 6178755660517568266, guid: e34efd1f298df4dd9a3b69621ce5afc3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -245,10 +214,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6178755660517568266, guid: e34efd1f298df4dd9a3b69621ce5afc3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 173898973287151771}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e34efd1f298df4dd9a3b69621ce5afc3, type: 3}
 --- !u!4 &4616931649343461090 stripped
