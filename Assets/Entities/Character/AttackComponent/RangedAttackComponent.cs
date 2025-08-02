@@ -9,7 +9,6 @@ public class RangedAttackComponent : AttackComponent
     private Transform projectileSpawnPosition;
     public override void Attack(Quaternion direction)
     {
-        Debug.Log("Attack direction: " + direction.eulerAngles);
         GameObject currentProjectile = Instantiate(projectile, projectileSpawnPosition.position, projectileSpawnPosition.rotation);
     }
 }
