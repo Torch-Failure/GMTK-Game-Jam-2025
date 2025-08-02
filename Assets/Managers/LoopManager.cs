@@ -1,4 +1,5 @@
 using System;
+using PlayerManager;
 using UnityEngine;
 
 public class LoopManager : MonoBehaviour
@@ -13,38 +14,9 @@ public class LoopManager : MonoBehaviour
 
         public int loopLengthTicks = 1000; // How long each loop is
         private int currentTick = 0; // Current tick in this thread of the loop
-        public PlayerManager playerManager;
+        public PlayerManager.PlayerManager playerManager;
 
         private LoopState state = LoopState.PlayerSelection;
-
-        // Restores everything to where it was at the start of the current loop
-        // Player history should be preserved
-        public void RestartLoop()
-        {   
-            // This can eventually operate on a list of common interfaces/super classes
-            playerManager.LoadLoopStart();
-            // Should reset loop on every manager or entity
-            playerManager.RestartLoop();
-            currentTick = 0;
-        }
-
-        private void HandleLoopTransistion()
-        {
-            // If no more characters can be played this loop,
-            // move to the next one
-            if (!playerManager.CanActivateCharacter())
-            {
-                IncrementLoop();
-            }
-
-            RestartLoop();
-            state = LoopState.PlayerSelection;
-
-            if (!playerManager.CanActivateCharacter())
-            {
-                throw new InvalidOperationException("No characters available after incrementing loop. Game should end but thats not done yet.");
-            }
-        }
 
         // Should dispatch updates to pretty much everything else in the game depending on state
         public void InternalFixedUpdate()
@@ -61,7 +33,7 @@ public class LoopManager : MonoBehaviour
                     currentTick++;
                     if (currentTick >= loopLengthTicks)
                     {
-                        HandleLoopTransistion();
+                        HandleLoopEnd();
                     }
                     break;
             }
@@ -86,11 +58,38 @@ public class LoopManager : MonoBehaviour
             }
         }
 
+        // Restores everything to where it was at the start of the current loop
+        // Player history should be preserved
+        public void RestartLoop()
+        {   
+            // This can eventually operate on a list of common interfaces/super classes
+            playerManager.LoadLoopStart();
+            currentTick = 0;
+        }
+
         // Will move to next loop
-        void IncrementLoop()
+        void NextLoop()
         {
-            Debug.Log("Incrementing looop.....");
-            playerManager.IncrementLoop();
+            Debug.Log("Next looop.....");
+            playerManager.NextLoop();
             playerManager.SaveLoopStart();
+        }
+
+        private void HandleLoopEnd()
+        {
+            // If no more characters can be played this loop,
+            // move to the next one
+            if (!playerManager.CanActivateCharacter())
+            {
+                NextLoop();
+            }
+
+            RestartLoop();
+            state = LoopState.PlayerSelection;
+
+            if (!playerManager.CanActivateCharacter())
+            {
+                throw new InvalidOperationException("No characters available after incrementing loop. Game should end but thats not done yet.");
+            }
         }
 }

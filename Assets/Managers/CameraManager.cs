@@ -7,7 +7,7 @@ public class CameraManager : MonoBehaviour
     public float cameraDamping;
     public float mseCameraInfluence;
     private Vector3 velocity = Vector3.zero;
-    public PlayerManager playerManager; // For getting active player;
+    public PlayerManager.PlayerManager playerManager; // For getting active player;
 
     private InputAction pointAction;
 
