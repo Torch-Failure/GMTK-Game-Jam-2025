@@ -71,6 +71,26 @@ namespace PlayerManager {
             SaveLoopStart();
         }
 
+        public void PreviousCharacter() {
+            selectedCharacterIndex--;
+        }
+
+        public void NextCharacter() {
+            selectedCharacterIndex++;
+        }
+
+        public void SelectCharacter() {
+                // Handle selection
+                if (!(activeThread.state == CharacterThread.ThreadState.Unplayed ||
+                      activeThread.state == CharacterThread.ThreadState.Inactive))
+                {
+                    throw new InvalidOperationException("Tried to select thread that was not in selectable state");
+                }
+
+                activeThread.state = CharacterThread.ThreadState.Active;
+                isCharacterSelected = true;
+        }
+
         public void SaveLoopStart()
         {   
             loopStartState.SaveState(characterThreads);
@@ -125,12 +145,12 @@ namespace PlayerManager {
             // Update selection from inputs
             if (cycleNextAction.WasPressedThisFrame())
             {
-                selectedCharacterIndex++;
+                NextCharacter();
             }
 
             if (cyclePreviousAction.WasPressedThisFrame())
             {
-                selectedCharacterIndex--;
+                PreviousCharacter();
             }
             
             // Wrap index around
@@ -149,15 +169,7 @@ namespace PlayerManager {
 
             if (selectAction.WasPressedThisFrame())
             {
-                // Handle selection
-                if (!(activeThread.state == CharacterThread.ThreadState.Unplayed ||
-                      activeThread.state == CharacterThread.ThreadState.Inactive))
-                {
-                    throw new InvalidOperationException("Tried to select thread that was not in selectable state");
-                }
-
-                activeThread.state = CharacterThread.ThreadState.Active;
-                isCharacterSelected = true;
+                SelectCharacter();
             }
         }
 

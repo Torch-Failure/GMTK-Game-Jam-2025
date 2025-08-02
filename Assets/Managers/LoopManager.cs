@@ -54,6 +54,7 @@ public class LoopManager : MonoBehaviour
                     if (playerManager.isCharacterSelected)
                     {
                         state = LoopState.ThreadPlaying;
+                        UI.SetState(UIState.ThreadPlaying);
                     }
                     break;
                 case LoopState.ThreadPlaying:
@@ -101,6 +102,7 @@ public class LoopManager : MonoBehaviour
 
             RestartLoop();
             state = LoopState.PlayerSelection;
+            UI.SetState(UIState.PlayerSelection);
 
             if (!playerManager.CanActivateCharacter())
             {
