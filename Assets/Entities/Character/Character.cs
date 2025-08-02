@@ -23,6 +23,13 @@ public class Character : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
+
+        if (currentHealth <= 0)
+        {
+            // Replace with actual death
+            Debug.Log("Entity died :(");
+            currentHealth = 100f;
+        }
     }
 
     public virtual void Attack()

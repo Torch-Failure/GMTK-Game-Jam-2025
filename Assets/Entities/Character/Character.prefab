@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4960838366900561895}
   - component: {fileID: 5169066902574271174}
   - component: {fileID: 285296558634966963}
-  - component: {fileID: -6183075164566688049}
+  - component: {fileID: 8912395910470207534}
   m_Layer: 0
   m_Name: Character
   m_TagString: Player
@@ -106,7 +106,7 @@ MonoBehaviour:
   speed: 10
   maxHealth: 100
   currentHealth: 100
---- !u!61 &-6183075164566688049
+--- !u!61 &8912395910470207534
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
