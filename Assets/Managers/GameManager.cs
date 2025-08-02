@@ -17,8 +17,7 @@ public class GameManager : MonoBehaviour
     private InputAction pauseAction;
     private InputAction replayAction;
 
-    [SerializeField]
-    private PlayerManager playerManager;
+    public LoopManager loopManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -69,7 +68,7 @@ public class GameManager : MonoBehaviour
 
     void GameSetup()
     {
-        playerManager.PlayNextCharacter();
+        loopManager.RestartLoop();
         currentState = GameState.Gameplay;
         Debug.Log("Gameplay");
     }
@@ -84,14 +83,14 @@ public class GameManager : MonoBehaviour
         } 
         else if (replayAction.WasPressedThisFrame()) // Temp debug action.
         {
-            playerManager.PlayNextCharacter();
+            loopManager.RestartLoop();
         }
-        playerManager.InternalUpdate();
+        loopManager.InternalUpdate();
     }
 
     void GameplayFixedUpdate()
     {
-        playerManager.InternalFixedUpdate();
+        loopManager.InternalFixedUpdate();
     }
 
     void Pause()
