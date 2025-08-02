@@ -1,13 +1,18 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI : MonoBehaviour
 {
     [SerializeField] GameObject mainMenu;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameManager gameManager;
+
+    [SerializeField] Button playButton;
+    [SerializeField] Button resumeButton;
     
     void Start() {
-        CloseMenus();
+        playButton.onClick.AddListener(gameManager.PlayGame);
+        resumeButton.onClick.AddListener(gameManager.ResumeGame);
     }
 
     public void OpenMainMenu() {
