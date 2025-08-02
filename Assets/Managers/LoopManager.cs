@@ -19,14 +19,9 @@ public class LoopManager : MonoBehaviour
         void Start()
         {
             playerManager.loopLengthTicks = loopLengthTicks;
+            playerManager.characterThreadTimeUpEvent += PlayerManagerThreadTimeUp; 
         }
 
-        // Need to reset loop when:
-        //  - Active thread is killed
-        //  - Active thread length reaches loopLengthSeconds
-
-        // Need to move to next loop when:
-        //  - 
 
         // Restores everything to where it was at the start of the loop
         // Player history should be preserved
@@ -67,16 +62,14 @@ public class LoopManager : MonoBehaviour
             }
         }
 
-        // What calls this?
-        // Also the player manager?
+        // Will move to next loop
         void IncrementLoop()
         {
-            // Store previous start of loop, update starting point
-            // playerManager.setLoopStart();
         }
 
-        void EndGame()
+        private void PlayerManagerThreadTimeUp()
         {
-
+            Debug.Log("Time up!");
+            RestartLoop();
         }
 }

@@ -7,7 +7,7 @@ public class PlayerManager : MonoBehaviour
 {
 
     // These events talk to the loop manager
-    public event Action characterThreadTimeUp;
+    public event Action characterThreadTimeUpEvent;
 
     public int loopLengthTicks;
     private int currentTick;
@@ -131,7 +131,7 @@ public class PlayerManager : MonoBehaviour
 
         if (currentTick > loopLengthTicks)
         {
-            // characterThreadTimeUp?.Invoke();
+            characterThreadTimeUpEvent?.Invoke();
         }
     }
 
