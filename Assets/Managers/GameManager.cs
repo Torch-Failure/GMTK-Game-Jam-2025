@@ -18,12 +18,15 @@ public class GameManager : MonoBehaviour
     private InputAction replayAction;
 
     public LoopManager loopManager;
+    [SerializeField] private UI ui;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         pauseAction = InputSystem.actions.FindAction("Pause");
         replayAction = InputSystem.actions.FindAction("Replay");
+
+        // ui.OpenMainMenu();
     }
 
     // Update is called once per frame
@@ -79,6 +82,7 @@ public class GameManager : MonoBehaviour
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Pause;
+            ui.OpenPauseMenu();
             Debug.Log("Pause");
         } 
         else if (replayAction.WasPressedThisFrame()) // Temp debug action.
@@ -98,6 +102,7 @@ public class GameManager : MonoBehaviour
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Gameplay;
+            ui.CloseMenus();
         }
     }
 
