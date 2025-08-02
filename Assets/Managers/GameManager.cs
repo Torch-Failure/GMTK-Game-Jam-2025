@@ -12,18 +12,21 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
-    public GameState currentState;
+    public GameState currentState = GameState.MainMenu;
     
     private InputAction pauseAction;
     private InputAction replayAction;
 
     public LoopManager loopManager;
+    [SerializeField] private UI ui;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         pauseAction = InputSystem.actions.FindAction("Pause");
         replayAction = InputSystem.actions.FindAction("Replay");
+
+        ui.OpenMainMenu();
     }
 
     // Update is called once per frame
@@ -59,11 +62,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void PlayGame() {
+        if (currentState == GameState.MainMenu) {
+            currentState = GameState.GameSetup;
+            ui.CloseMenus();
+            Debug.Log("Game Setup");
+        }
+    }
+
+    public void ResumeGame() {
+        if (currentState == GameState.Pause) {
+            currentState = GameState.Gameplay;
+            ui.CloseMenus();
+            Debug.Log("Game Setup");
+        }
+    }
+
     void MainMenu()
     {
-        Debug.Log("MainMenu");
-        currentState = GameState.GameSetup;
-        Debug.Log("Game Setup");
     }
 
     void GameSetup()
@@ -79,6 +95,7 @@ public class GameManager : MonoBehaviour
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Pause;
+            ui.OpenPauseMenu();
             Debug.Log("Pause");
         } 
         else if (replayAction.WasPressedThisFrame()) // Temp debug action.
@@ -98,6 +115,7 @@ public class GameManager : MonoBehaviour
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Gameplay;
+            ui.CloseMenus();
         }
     }
 
