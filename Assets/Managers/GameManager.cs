@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
 
     void Gameplay()
     {
-        Debug.Log("Gameplay");
+        // Debug.Log("Gameplay");
         if (pauseAction.WasPressedThisFrame())
         {
             currentState = GameState.Pause;
