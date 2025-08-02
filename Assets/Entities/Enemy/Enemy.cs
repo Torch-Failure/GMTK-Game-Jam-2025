@@ -1,5 +1,6 @@
 using NUnit.Framework.Interfaces;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : Character
@@ -8,13 +9,19 @@ public class Enemy : Character
     private float visionRange = 5f;
 
     [SerializeField]
-    private float alertDuration = 2f; // Time to wait before attacking
+    private float visionAngle = 30f;
 
-    private GameObject[] players;
+    [SerializeField]
+    private float alertDuration = 2f;
+
     private GameObject currentTarget;
+    private List<GameObject> players = new List<GameObject>();
 
     private EnemyState currentState = EnemyState.Idle;
     private float alertTimer = 0f;
+
+
+
 
     public enum EnemyState
     {
@@ -25,8 +32,7 @@ public class Enemy : Character
 
     void Start()
     {
-        players = GameObject.FindGameObjectsWithTag("Player");
-        Debug.Log("Enemy initialized with " + players.Length + " players in the scene.");
+
     }
 
     void Update()
@@ -52,9 +58,10 @@ public class Enemy : Character
 
     void HandleIdleState()
     {
-        Debug.Log("Enemy is idle, searching for players.");
+        // Debug.Log("Enemy is idle, searching for players.");
         GameObject closest = GetClosestPlayer();
-        if (closest != null)
+        // Debug.Log("Closest Player: " + closest);
+        if (closest != null && CanSeeTarget(closest))
         {
             currentTarget = closest;
             currentState = EnemyState.Alert;
@@ -64,8 +71,8 @@ public class Enemy : Character
 
     void HandleAlertState()
     {
-        Debug.Log("Enemy is alert, waiting for " + alertDuration + " seconds before attacking.");
-        if (currentTarget == null || !TargetWithinRange(currentTarget, visionRange))
+        // Debug.Log("Enemy is alert, waiting for " + alertDuration + " seconds before attacking.");
+        if (currentTarget == null || !CanSeeTarget(currentTarget))
         {
             currentState = EnemyState.Idle;
             currentTarget = null;
@@ -82,14 +89,14 @@ public class Enemy : Character
 
     void HandleAttackingState()
     {
-        Debug.Log("Enemy is attacking the target.");
+        // Debug.Log("Enemy is attacking the target.");
         if (currentTarget == null)
         {
             currentState = EnemyState.Idle;
             return;
         }
 
-        if (!TargetWithinRange(currentTarget, visionRange))
+        if (!CanSeeTarget(currentTarget))
         {
             currentState = EnemyState.Alert;
             alertTimer = 0f;
@@ -109,7 +116,7 @@ public class Enemy : Character
         foreach (var player in players)
         {
             float dist = Vector3.Distance(currentPos, player.transform.position);
-            if (dist < minDist && dist <= visionRange)
+            if (dist < minDist)
             {
                 minDist = dist;
                 closestPlayer = player;
@@ -119,12 +126,33 @@ public class Enemy : Character
         return closestPlayer;
     }
 
-    bool TargetWithinRange(GameObject target, float range)
+    bool TargetWithinVisionAngle(GameObject target)
+    {
+        if (target == null) return false;
+
+        Vector3 directionToTarget = target.transform.position - transform.position;
+        directionToTarget.Normalize();
+
+        Vector3 forward = transform.up;
+
+        float angle = Vector3.Angle(forward, directionToTarget);
+
+        return angle <= visionAngle;
+    }
+
+    bool TargetWithinVisionRange(GameObject target)
     {
         if (target == null) return false;
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
-        return distance <= range;
+        return distance <= visionRange;
+    }
+
+    bool CanSeeTarget(GameObject target)
+    {
+        if (target == null) return false;
+
+        return TargetWithinVisionRange(target) && TargetWithinVisionAngle(target);
     }
 
     void rotateTowardsTarget(GameObject target)
@@ -140,5 +168,11 @@ public class Enemy : Character
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, visionRange);
+    }
+    
+    public void SetPlayers(List<GameObject> playersList)
+    {
+        players = playersList;
+        Debug.Log($"Enemy received {players.Count} players");
     }
 }
