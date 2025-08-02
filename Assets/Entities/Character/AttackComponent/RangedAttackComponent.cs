@@ -11,7 +11,5 @@ public class RangedAttackComponent : AttackComponent
     {
         Debug.Log("Attack direction: " + direction.eulerAngles);
         GameObject currentProjectile = Instantiate(projectile, projectileSpawnPosition.position, projectileSpawnPosition.rotation);
-        Rigidbody2D rb = currentProjectile.GetComponent<Rigidbody2D>();
-        rb.AddForce(currentProjectile.transform.up * 500f);
     }
 }
