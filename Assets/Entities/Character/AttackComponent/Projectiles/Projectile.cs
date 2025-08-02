@@ -23,13 +23,16 @@ public class Projectile : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-
         Character character =  collision.gameObject.GetComponent<Character>();
 
-        if (character != null && this.tag != character.tag)
+        if (character != null)
         {
-            Debug.Log("Hit something");
-            character.TakeDamage(damage);
+            // If we are hitting the other 'side' or if we can hit friendlies
+            if (this.tag != character.tag || GameManager.enableFriendlyFire)
+            {
+                Debug.Log("Hit something");
+                character.TakeDamage(damage);
+            }
         }
 
         if (collision.gameObject.GetComponent<Projectile>() == null)

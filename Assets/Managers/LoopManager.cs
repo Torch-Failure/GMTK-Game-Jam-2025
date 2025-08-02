@@ -18,6 +18,11 @@ public class LoopManager : MonoBehaviour
 
         private LoopState state = LoopState.PlayerSelection;
 
+        void Start()
+        {
+            playerManager.OnActivePlayerKilled += HandleActivePlayerDeath;
+        }
+
         // Should dispatch updates to pretty much everything else in the game depending on state
         public void InternalFixedUpdate()
         {
@@ -57,12 +62,19 @@ public class LoopManager : MonoBehaviour
                     playerManager.ThreadPlayingUpdate();
                     break;
             }
+        }  
+
+        private void HandleActivePlayerDeath()
+        {
+            Debug.Log("Handling play death...");
+            HandleLoopEnd();
         }
 
         // Restores everything to where it was at the start of the current loop
         // Player history should be preserved
         public void RestartLoop()
         {   
+            Debug.Log("Restarting loop...");
             // This can eventually operate on a list of common interfaces/super classes
             playerManager.LoadLoopStart();
             currentTick = 0;
@@ -77,7 +89,10 @@ public class LoopManager : MonoBehaviour
         }
 
         private void HandleLoopEnd()
-        {
+        {   
+            // Handle timing out threads
+            playerManager.OnLoopEnd();
+
             // If no more characters can be played this loop,
             // move to the next one
             if (!playerManager.CanActivateCharacter())

@@ -12,6 +12,8 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    public static bool enableFriendlyFire = true;
+
     public GameState currentState = GameState.MainMenu;
     
     private InputAction pauseAction;

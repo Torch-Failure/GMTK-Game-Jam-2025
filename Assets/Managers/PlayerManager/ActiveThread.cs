@@ -13,7 +13,7 @@ namespace PlayerManager {
             {
                 if (_activeThread != null)
                 {
-                    _activeThread.threadCharacter.GetComponent<SpriteRenderer>().color = Color.white;
+                    _activeThread.threadCharacter.GetComponent<SpriteRenderer>().color = _activeThread.threadCharacter.GetCurrentColor();
                 }
                 value.threadCharacter.GetComponent<SpriteRenderer>().color = Color.red;
                 _activeThread = value;

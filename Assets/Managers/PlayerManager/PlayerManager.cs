@@ -16,6 +16,7 @@ namespace PlayerManager {
         public Character playerPrefab;
 
         private LoopStartState loopStartState;
+        private int currentLoopTick = 0; // Sent down to us by the loop manager
 
         public int numberOfCharacters = 4;
         private List<CharacterThread> characterThreads = new();
@@ -39,6 +40,7 @@ namespace PlayerManager {
         // Used for character selection:
         private int selectedCharacterIndex = 0;
         public bool isCharacterSelected {get; private set;} = false;
+        public event Action OnActivePlayerKilled;
 
         void Start()
         {
@@ -54,12 +56,14 @@ namespace PlayerManager {
             {
                 int xOffset = -9 + i * 4;
                 Character currentPlayer = Instantiate(playerPrefab, Vector3.right * (float)xOffset, Quaternion.identity).GetComponent<Character>();
+                currentPlayer.OnDeath += OnPlayerDeath;
                 CharacterThread newThread = new(currentPlayer);
                 characterThreads.Add(newThread);
             }
 
             loopStartState.characterPositions = new();
             loopStartState.characterRotations = new();
+            loopStartState.characterStates = new();
             
             // Ensure this is not null before first fixed update
             activeThread = characterThreads[selectedCharacterIndex];
@@ -76,7 +80,15 @@ namespace PlayerManager {
         }
 
         public void SelectCharacter() {
-            isCharacterSelected = true;
+                // Handle selection
+                if (!(activeThread.state == CharacterThread.ThreadState.Unplayed ||
+                      activeThread.state == CharacterThread.ThreadState.Inactive))
+                {
+                    throw new InvalidOperationException("Tried to select thread that was not in selectable state");
+                }
+
+                activeThread.state = CharacterThread.ThreadState.Active;
+                isCharacterSelected = true;
         }
 
         public void SaveLoopStart()
@@ -86,13 +98,33 @@ namespace PlayerManager {
 
         public void LoadLoopStart()
         {
+            Debug.Log("Loading state...");
             loopStartState.LoadState(characterThreads);
             isCharacterSelected = false;
+            currentLoopTick = 0;
+        }
+
+        // Called by character death handler when a player dies
+        public void OnPlayerDeath(Character character)
+        {
+            foreach (var thread in characterThreads)
+            {
+                if (thread.threadCharacter == character)
+                {
+                    thread.SetDeathInfo(currentLoopTick);
+                }
+            }
+
+            if (activeThread.threadCharacter == character)
+            {
+                    Debug.Log("Active player killed!");
+                    OnActivePlayerKilled?.Invoke();
+            }
         }
 
         public void ThreadPlayingUpdate()
         {
-            if (attackAction.WasPressedThisFrame()) {
+            if (attackAction.WasPressedThisFrame() && activeThread.IsUnderPlayerControl(currentLoopTick)) {
                 currentPlayer.Attack();
                 var currentHistory = activeThread.history;
                 var lastRecord = currentHistory[currentHistory.Count - 1];
@@ -143,30 +175,39 @@ namespace PlayerManager {
 
         public void ThreadPlayingFixedUpdate(int loopTick)
         {
-            PlayerInputRecord inputRecord = new();
-            
-            var m = moveAction.ReadValue<Vector2>();
-            currentPlayer.Move(m);
-            inputRecord.move = m;
+            currentLoopTick = loopTick;
+            bool playerControlActive = activeThread.IsUnderPlayerControl(currentLoopTick);
 
-            // Face towards point
-            Vector2 screenPoint = pointAction.ReadValue<Vector2>();
-            Vector2 point = Camera.main.ScreenToWorldPoint(screenPoint);
-            Vector2 playerPos = currentPlayer.transform.position;
-            Vector2 direction = point - playerPos;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            currentPlayer.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
-            inputRecord.rotation = currentPlayer.transform.rotation;
-            activeThread.PushHistory(inputRecord);
+            if (playerControlActive)
+            {
+                PlayerInputRecord inputRecord = new();
+                
+                var m = moveAction.ReadValue<Vector2>();
+                currentPlayer.Move(m);
+                inputRecord.move = m;
+
+                // Face towards point
+                Vector2 screenPoint = pointAction.ReadValue<Vector2>();
+                Vector2 point = Camera.main.ScreenToWorldPoint(screenPoint);
+                Vector2 playerPos = currentPlayer.transform.position;
+                Vector2 direction = point - playerPos;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                currentPlayer.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+                inputRecord.rotation = currentPlayer.transform.rotation;
+                activeThread.PushHistory(inputRecord);
+            }
             
             // Play out history of other characters
             for (int i = 0; i < numberOfCharacters; i++)
             {
                 var thread = characterThreads[i];
 
-                // Don't play out history of active character
-                // This is kind of ugly
-                if (thread == activeThread) continue;
+                // If character is active AND is under player control, we shouldn't
+                // play out thier history
+                if (thread == activeThread && playerControlActive) continue;
+                
+                // Don't play history of anything which is dead
+                if (thread.threadCharacter.state == Character.CharacterState.Dead) continue;
 
                 var inputHistory = thread.history;
                 var character = thread.threadCharacter;
@@ -191,7 +232,43 @@ namespace PlayerManager {
                     selectedCharacterIndex = i;
                 }
 
+                if (thread.threadCharacter.state == Character.CharacterState.Dead)
+                {
+                    // If a thread is dead AND we are moving to the next loop, they are dead dead
+                    thread.state = CharacterThread.ThreadState.PermenantlyDead;
+                }
+
                 thread.Reset();
+            }
+        }
+
+        public void OnLoopEnd()
+        {
+            // If a loop ends and the active thread is alive, it has timed out
+            if (activeThread != null)
+            {
+                if (activeThread.threadCharacter.state == Character.CharacterState.Alive)
+                {
+                    activeThread.state = CharacterThread.ThreadState.Complete;
+                }
+                else
+                {
+                    // We were cut short by something (death)
+                    activeThread.state = CharacterThread.ThreadState.Inactive;
+                }
+            }
+
+            // Handle threads that previously died and now lived long, happy lives
+            foreach (var thread in characterThreads)
+            {
+                // If were inactive AND previously died (both of these captured in inactive state)
+                // AND did not die this time 
+                if (thread.state == CharacterThread.ThreadState.Inactive && 
+                    thread.threadCharacter.state != Character.CharacterState.Dead)
+                {
+                    // Assign an arbitrairily high death tick
+                    thread.SetDeathInfo(int.MaxValue);
+                }   
             }
         }
 
