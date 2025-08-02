@@ -105,7 +105,7 @@ MonoBehaviour:
   speed: 10
   maxHealth: 100
   currentHealth: 100
-  visionRange: 5
+  visionRange: 10
   visionAngle: 30
   visionRayCount: 5
   alertDuration: 2

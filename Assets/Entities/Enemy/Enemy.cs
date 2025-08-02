@@ -7,6 +7,7 @@ public class Enemy : Character
     [SerializeField] private float visionAngle = 30f;
     [SerializeField] private int visionRayCount = 5;
     [SerializeField] private float alertDuration = 2f;
+    [SerializeField] private float rotationSpeed = 10f;
 
     [SerializeField] private LayerMask obstacleMask;
 
@@ -80,6 +81,7 @@ public class Enemy : Character
         GameObject closestPlayer = GetClosestObject(players);
         rotateTowardsTarget(closestPlayer);
         // TODO: Add attack logic here
+        Attack();
     }
 
     
@@ -133,8 +135,13 @@ public class Enemy : Character
     {
         if (target == null) return;
         Vector3 dir = target.transform.position - transform.position;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        transform.rotation = Quaternion.Lerp(
+            transform.rotation,
+            targetRotation,
+            rotationSpeed * Time.deltaTime
+        );
     }
 
     void OnDrawGizmosSelected()
