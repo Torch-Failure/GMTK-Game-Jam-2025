@@ -8,12 +8,17 @@ public class Enemy : Character
     [SerializeField] private int visionRayCount = 5;
     [SerializeField] private float alertDuration = 2f;
     [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] public float patrolNodeDistanceTolerance = 0.1f; // Distance to patrol node which counts as reaching
+    [SerializeField] private EnemyPatrolRoute patrolRoute; 
+    [SerializeField] private EnemyState defaultState = EnemyState.Idle;
 
     [SerializeField] private LayerMask obstacleMask;
 
     private float alertTimer = 0f;
+    private int patrolNodeId  = 0;
 
-    public enum EnemyState { Idle, Alert, Attacking }
+
+    public enum EnemyState { Idle, Patrolling, Alert, Attacking }
 
     private EnemyState _currentState = EnemyState.Idle;
     private EnemyState currentState
@@ -51,6 +56,11 @@ public class Enemy : Character
         Gizmos.DrawLine(transform.position, rightEdge);
     }
 
+    void Start()
+    {
+        currentState = defaultState;
+    }
+
     void Update()
     {
         switch (currentState)
@@ -64,10 +74,13 @@ public class Enemy : Character
             case EnemyState.Attacking:
                 AttackUpdate();
                 break;
+            case EnemyState.Patrolling:
+                PatrolUpdate();
+                break;
         }
     }
 
-    void IdleUpdate()
+    void CheckIfAlerted()
     {
         if (VisionConeRaycast().Count > 0)
         {
@@ -75,12 +88,40 @@ public class Enemy : Character
         }
     }
 
+    void IdleUpdate()
+    {
+        CheckIfAlerted();
+    }
+
+    void PatrolUpdate()
+    {
+        if (patrolRoute == null)
+        {
+            defaultState = EnemyState.Idle;
+            currentState = EnemyState.Idle;
+            return;
+        }   
+
+        var currentNode = patrolRoute.nodes[patrolNodeId];
+        Vector3 toNode = currentNode.position - transform.position;
+        Move(toNode);
+        rotateTowardsDirection(toNode);
+        
+        if( toNode.magnitude < patrolNodeDistanceTolerance )
+        {
+            patrolNodeId++;
+            patrolNodeId %= patrolRoute.nodes.Length;
+        } 
+
+        CheckIfAlerted();
+    }
+
     void AlertUpdate()
     {
         var players = VisionConeRaycast();
         if (players.Count == 0)
         {
-            currentState = EnemyState.Idle;
+            currentState = defaultState;
             return;
         }
         GameObject closestPlayer = Helpers.GetClosestObject(players, transform.position);
@@ -138,7 +179,12 @@ public class Enemy : Character
     {
         if (target == null) return;
         Vector3 dir = target.transform.position - transform.position;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+        rotateTowardsDirection(dir);
+    }
+
+    void rotateTowardsDirection(Vector3 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
         Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
