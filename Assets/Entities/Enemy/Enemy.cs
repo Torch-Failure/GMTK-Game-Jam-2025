@@ -180,7 +180,6 @@ public class Enemy : Character
         if (target == null) return;
         Vector3 dir = target.transform.position - transform.position;
         rotateTowardsDirection(dir);
-
     }
 
     void rotateTowardsDirection(Vector3 direction)
