@@ -20,6 +20,8 @@ namespace PlayerManager {
 
         public int numberOfCharacters = 4;
         private List<CharacterThread> characterThreads = new();
+        private List<CharacterThread> activatableThreads = new();
+
         
         // Thread that the player is currently playing
         private ActiveThread activeThreadContainer = new();
@@ -73,10 +75,36 @@ namespace PlayerManager {
 
         public void PreviousCharacter() {
             selectedCharacterIndex--;
+            UpdateSelectedCharacter();
         }
 
         public void NextCharacter() {
             selectedCharacterIndex++;
+            UpdateSelectedCharacter();
+        }
+
+        public void UpdateSelectedCharacter()
+        {
+            // Check validity
+            if (activatableThreads.Count == 0)
+            {
+                throw new InvalidOperationException("Should not be in character selection state if no selectable characters");
+            }
+
+            // Wrap index around
+            if (selectedCharacterIndex < 0)
+            {
+                selectedCharacterIndex = activatableThreads.Count - 1;
+            }
+
+            // Wrap index around
+            if (selectedCharacterIndex >= activatableThreads.Count)
+            {
+                selectedCharacterIndex = 0;
+            }
+
+            // Update selection
+            activeThread = activatableThreads[selectedCharacterIndex];
         }
 
         public void SelectCharacter() {
@@ -102,6 +130,7 @@ namespace PlayerManager {
             loopStartState.LoadState(characterThreads);
             isCharacterSelected = false;
             currentLoopTick = 0;
+            activatableThreads = GetActivatableThreads();
         }
 
         // Called by character death handler when a play dies
@@ -135,13 +164,6 @@ namespace PlayerManager {
 
         public void CharacterSelectionUpdate()
         {
-            // Check validity
-            var activatableThreads = GetActivatableThreads();        
-            if (activatableThreads.Count == 0)
-            {
-                throw new InvalidOperationException("Should not be in character selection state if no selectable characters");
-            }
-
             // Update selection from inputs
             if (cycleNextAction.WasPressedThisFrame())
             {
@@ -153,19 +175,12 @@ namespace PlayerManager {
                 PreviousCharacter();
             }
             
-            // Wrap index around
-            if (selectedCharacterIndex >= activatableThreads.Count)
-            {
-                selectedCharacterIndex = 0;
-            }
-
-            if (selectedCharacterIndex < 0)
-            {
-                selectedCharacterIndex = activatableThreads.Count - 1;
-            }
-
-            // Apply selection
-            activeThread = activatableThreads[selectedCharacterIndex];
+            // Guarantee that this gets called even if not next/previous action
+            // This handles case when we first enter selection mode and the active
+            // thread is whatever we just finished a loop as. 
+            // Ideally this would be an OnEnterSelectionState thing but this is easier 
+            // and works fine
+            UpdateSelectedCharacter();
 
             if (selectAction.WasPressedThisFrame())
             {
