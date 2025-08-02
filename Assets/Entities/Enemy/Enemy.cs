@@ -9,14 +9,14 @@ public class Enemy : Character
     [SerializeField] private float alertDuration = 2f;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] public float patrolNodeDistanceTolerance = 0.1f; // Distance to patrol node which counts as reaching
-    [SerializeField] private int patrolNodeId  = 0;
     [SerializeField] private EnemyPatrolRoute patrolRoute; 
     [SerializeField] private EnemyState defaultState = EnemyState.Idle;
-
 
     [SerializeField] private LayerMask obstacleMask;
 
     private float alertTimer = 0f;
+    private int patrolNodeId  = 0;
+
 
     public enum EnemyState { Idle, Patrolling, Alert, Attacking }
 
