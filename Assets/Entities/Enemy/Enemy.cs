@@ -1,85 +1,68 @@
-using NUnit.Framework.Interfaces;
-using Unity.VisualScripting;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : Character
 {
-    [SerializeField]
-    private float visionRange = 5f;
+    [SerializeField] private float visionRange = 5f;
+    [SerializeField] private float visionAngle = 30f;
+    [SerializeField] private int visionRayCount = 5;
+    [SerializeField] private float alertDuration = 2f;
 
-    [SerializeField]
-    private float visionAngle = 30f;
+    [SerializeField] private LayerMask obstacleMask;
 
-    [SerializeField]
-    private float alertDuration = 2f;
-
-    private GameObject currentTarget;
     private List<GameObject> players = new List<GameObject>();
 
-    private EnemyState currentState = EnemyState.Idle;
     private float alertTimer = 0f;
 
+    public enum EnemyState { Idle, Alert, Attacking }
 
-
-
-    public enum EnemyState
+    private EnemyState _currentState = EnemyState.Idle;
+    private EnemyState currentState
     {
-        Idle,
-        Alert,
-        Attacking
-    }
-
-    void Start()
-    {
-
+        get => _currentState;
+        set
+        {
+            if (_currentState != value)
+            {
+                _currentState = value;
+                if (value == EnemyState.Alert) alertTimer = 0f;
+            }
+        }
     }
 
     void Update()
     {
-        StateMachineUpdate();
-    }
-
-    void StateMachineUpdate()
-    {
         switch (currentState)
         {
             case EnemyState.Idle:
-                HandleIdleState();
+                IdleUpdate();
                 break;
             case EnemyState.Alert:
-                HandleAlertState();
+                AlertUpdate();
                 break;
             case EnemyState.Attacking:
-                HandleAttackingState();
+                AttackUpdate();
                 break;
         }
     }
 
-    void HandleIdleState()
+    void IdleUpdate()
     {
-        // Debug.Log("Enemy is idle, searching for players.");
-        GameObject closest = GetClosestPlayer();
-        // Debug.Log("Closest Player: " + closest);
-        if (closest != null && CanSeeTarget(closest))
+        if (VisionConeRaycast())
         {
-            currentTarget = closest;
             currentState = EnemyState.Alert;
-            alertTimer = 0f;
         }
     }
 
-    void HandleAlertState()
+    void AlertUpdate()
     {
-        // Debug.Log("Enemy is alert, waiting for " + alertDuration + " seconds before attacking.");
-        if (currentTarget == null || !CanSeeTarget(currentTarget))
+        if (!VisionConeRaycast())
         {
             currentState = EnemyState.Idle;
-            currentTarget = null;
             return;
         }
-
-        rotateTowardsTarget(currentTarget);
+        GameObject closestPlayer = GetClosestObject(players);
+        rotateTowardsTarget(closestPlayer);
         alertTimer += Time.deltaTime;
         if (alertTimer >= alertDuration)
         {
@@ -87,92 +70,92 @@ public class Enemy : Character
         }
     }
 
-    void HandleAttackingState()
+    void AttackUpdate()
     {
-        // Debug.Log("Enemy is attacking the target.");
-        if (currentTarget == null)
-        {
-            currentState = EnemyState.Idle;
-            return;
-        }
-
-        if (!CanSeeTarget(currentTarget))
+        if (!VisionConeRaycast())
         {
             currentState = EnemyState.Alert;
-            alertTimer = 0f;
             return;
         }
-
-        rotateTowardsTarget(currentTarget);
-        // Add attacking logic here (e.g., shooting, chasing, etc.)
+        GameObject closestPlayer = GetClosestObject(players);
+        rotateTowardsTarget(closestPlayer);
+        // TODO: Add attack logic here
     }
 
-    GameObject GetClosestPlayer()
+    
+    bool VisionConeRaycast()
     {
-        GameObject closestPlayer = null;
+        Vector3 origin = transform.position;
+        Vector3 forward = transform.up;
+        float halfAngle = visionAngle;
+
+        players = new List<GameObject>();
+
+        for (int i = 0; i < visionRayCount; i++)
+        {
+            float t = (visionRayCount == 1) ? 0.5f : (float)i / (visionRayCount - 1);
+            float angle = Mathf.Lerp(-halfAngle, halfAngle, t);
+            Vector3 dir = Quaternion.Euler(0, 0, angle) * forward;
+
+            RaycastHit2D hit = Physics2D.Raycast(origin, dir, visionRange, obstacleMask);
+            if (hit.collider != null)
+            {
+                Debug.Log($"Hit: {hit.collider.gameObject.name}");
+                if (hit.collider.CompareTag("Player"))
+                {
+                    players.Add(hit.collider.gameObject);
+                }
+            }
+        }
+        return players.Count > 0;
+    }
+
+    GameObject GetClosestObject(List<GameObject> objects)
+    {
+        GameObject closestObject = null;
         float minDist = Mathf.Infinity;
         Vector3 currentPos = transform.position;
 
-        foreach (var player in players)
+        foreach (var obj in objects)
         {
-            float dist = Vector3.Distance(currentPos, player.transform.position);
+            float dist = Vector3.Distance(currentPos, obj.transform.position);
             if (dist < minDist)
             {
                 minDist = dist;
-                closestPlayer = player;
+                closestObject = obj;
             }
         }
 
-        return closestPlayer;
-    }
-
-    bool TargetWithinVisionAngle(GameObject target)
-    {
-        if (target == null) return false;
-
-        Vector3 directionToTarget = target.transform.position - transform.position;
-        directionToTarget.Normalize();
-
-        Vector3 forward = transform.up;
-
-        float angle = Vector3.Angle(forward, directionToTarget);
-
-        return angle <= visionAngle;
-    }
-
-    bool TargetWithinVisionRange(GameObject target)
-    {
-        if (target == null) return false;
-
-        float distance = Vector3.Distance(transform.position, target.transform.position);
-        return distance <= visionRange;
-    }
-
-    bool CanSeeTarget(GameObject target)
-    {
-        if (target == null) return false;
-
-        return TargetWithinVisionRange(target) && TargetWithinVisionAngle(target);
+        return closestObject;
     }
 
     void rotateTowardsTarget(GameObject target)
     {
         if (target == null) return;
-
-        Vector3 direction = target.transform.position - transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Vector3 dir = target.transform.position - transform.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, visionRange);
-    }
-    
-    public void SetPlayers(List<GameObject> playersList)
-    {
-        players = playersList;
-        Debug.Log($"Enemy received {players.Count} players");
+        Vector3 forward = transform.up;
+        float halfAngle = visionAngle;
+        int segments = 30;
+        float step = (halfAngle * 2) / segments;
+
+        Vector3 prevPoint = transform.position + Quaternion.Euler(0, 0, -halfAngle) * forward * visionRange;
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = -halfAngle + step * i;
+            Vector3 nextPoint = transform.position + Quaternion.Euler(0, 0, angle) * forward * visionRange;
+            Gizmos.DrawLine(prevPoint, nextPoint);
+            prevPoint = nextPoint;
+        }
+        Vector3 leftEdge = transform.position + Quaternion.Euler(0, 0, -halfAngle) * forward * visionRange;
+        Vector3 rightEdge = transform.position + Quaternion.Euler(0, 0, halfAngle) * forward * visionRange;
+        Gizmos.DrawLine(transform.position, leftEdge);
+        Gizmos.DrawLine(transform.position, rightEdge);
     }
 }

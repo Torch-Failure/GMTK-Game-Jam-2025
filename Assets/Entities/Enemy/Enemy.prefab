@@ -107,8 +107,11 @@ MonoBehaviour:
   currentHealth: 100
   visionRange: 5
   visionAngle: 30
+  visionRayCount: 5
   alertDuration: 2
-  playerManager: {fileID: 0}
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &4011879042859960562
 PrefabInstance:
   m_ObjectHideFlags: 0
