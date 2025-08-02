@@ -67,6 +67,18 @@ namespace PlayerManager {
             SaveLoopStart();
         }
 
+        public void PreviousCharacter() {
+            selectedCharacterIndex--;
+        }
+
+        public void NextCharacter() {
+            selectedCharacterIndex++;
+        }
+
+        public void SelectCharacter() {
+            isCharacterSelected = true;
+        }
+
         public void SaveLoopStart()
         {   
             loopStartState.SaveState(characterThreads);
@@ -101,12 +113,12 @@ namespace PlayerManager {
             // Update selection from inputs
             if (cycleNextAction.WasPressedThisFrame())
             {
-                selectedCharacterIndex++;
+                NextCharacter();
             }
 
             if (cyclePreviousAction.WasPressedThisFrame())
             {
-                selectedCharacterIndex--;
+                PreviousCharacter();
             }
             
             // Wrap index around
@@ -125,7 +137,7 @@ namespace PlayerManager {
 
             if (selectAction.WasPressedThisFrame())
             {
-                isCharacterSelected = true;
+                SelectCharacter();
             }
         }
 
