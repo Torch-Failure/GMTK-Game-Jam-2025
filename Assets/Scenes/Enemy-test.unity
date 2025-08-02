@@ -422,7 +422,7 @@ Transform:
   m_GameObject: {fileID: 306594122}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.17239, y: 3.98331, z: 0}
+  m_LocalPosition: {x: 7.31, y: 3.77, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -459,6 +459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodes:
   - {fileID: 306594123}
+  - {fileID: 2117999932}
   - {fileID: 1836129776}
 --- !u!4 &782874421
 Transform:
@@ -475,6 +476,7 @@ Transform:
   m_Children:
   - {fileID: 306594123}
   - {fileID: 1836129776}
+  - {fileID: 2117999932}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &794409001 stripped
@@ -836,6 +838,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2117999931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2117999932}
+  m_Layer: 0
+  m_Name: Node3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2117999932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117999931}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8.88, y: 3.82, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 782874421}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3305424311253639254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -852,6 +885,10 @@ PrefabInstance:
       propertyPath: patrolRoute
       value: 
       objectReference: {fileID: 782874420}
+    - target: {fileID: 8413329300334771344, guid: 80f070aab896a65c88ddcc6e3da7af02, type: 3}
+      propertyPath: defaultState
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8413329300334771344, guid: 80f070aab896a65c88ddcc6e3da7af02, type: 3}
       propertyPath: _currentState
       value: 1

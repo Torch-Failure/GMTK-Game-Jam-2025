@@ -11,7 +11,7 @@ public class Enemy : Character
     [SerializeField] public float patrolNodeDistanceTolerance = 0.1f; // Distance to patrol node which counts as reaching
     [SerializeField] private int patrolNodeId  = 0;
     [SerializeField] private EnemyPatrolRoute patrolRoute; 
-    [SerializeField]
+    [SerializeField] private EnemyState defaultState = EnemyState.Idle;
 
 
     [SerializeField] private LayerMask obstacleMask;
@@ -56,6 +56,11 @@ public class Enemy : Character
         Gizmos.DrawLine(transform.position, rightEdge);
     }
 
+    void Start()
+    {
+        currentState = defaultState;
+    }
+
     void Update()
     {
         switch (currentState)
@@ -92,6 +97,7 @@ public class Enemy : Character
     {
         if (patrolRoute == null)
         {
+            defaultState = EnemyState.Idle;
             currentState = EnemyState.Idle;
             return;
         }   
@@ -115,7 +121,7 @@ public class Enemy : Character
         var players = VisionConeRaycast();
         if (players.Count == 0)
         {
-            currentState = EnemyState.Idle;
+            currentState = defaultState;
             return;
         }
         GameObject closestPlayer = Helpers.GetClosestObject(players, transform.position);
@@ -188,8 +194,3 @@ public class Enemy : Character
         );
     }
 }
-
-// Enemy movement:
-//      - In alert state, to some target distance from player
-//      - In patrol state, straight line to some node
-//      - In idle state ??? still
