@@ -104,7 +104,7 @@ namespace PlayerManager {
             currentLoopTick = 0;
         }
 
-        // Called by character death handler when a play dies
+        // Called by character death handler when a player dies
         public void OnPlayerDeath(Character character)
         {
             foreach (var thread in characterThreads)
@@ -202,8 +202,8 @@ namespace PlayerManager {
             {
                 var thread = characterThreads[i];
 
-                // Don't play out history of active character
-                // This is kind of ugly
+                // If character is active AND is under player control, we shouldn't
+                // play out thier history
                 if (thread == activeThread && playerControlActive) continue;
                 
                 // Don't play history of anything which is dead
@@ -258,7 +258,7 @@ namespace PlayerManager {
                 }
             }
 
-            // Account for threads that previously died and now lived long, happy lives
+            // Handle threads that previously died and now lived long, happy lives
             foreach (var thread in characterThreads)
             {
                 // If were inactive AND previously died (both of these captured in inactive state)

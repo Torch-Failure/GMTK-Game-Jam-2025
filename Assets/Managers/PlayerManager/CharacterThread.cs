@@ -1,8 +1,6 @@
 // Stores history of one character for the current loop
 using System;
 using System.Collections.Generic;
-using System.Threading;
-
 
 namespace PlayerManager {
     class CharacterThread
@@ -14,7 +12,6 @@ namespace PlayerManager {
 
         public Character threadCharacter;
 
-        // If a loop ended and this was active and not dead
         public enum ThreadState { 
                                   Unplayed, // Has not yet been touched by human hands this loop
                                   Active, // This character is active
@@ -62,6 +59,7 @@ namespace PlayerManager {
             threadTicks++;
         }
 
+        // This is relevant for threads which died previously and are now being replayed
         public bool IsUnderPlayerControl(int currentTick)
         {
             if (state != ThreadState.Active)
@@ -69,6 +67,9 @@ namespace PlayerManager {
                 throw new InvalidOperationException("Should only be called on active threads!");
             }
 
+            // If we are still at a point in history before the limiting death
+            // we are still replaying history.
+            // Once we get past that point, the player will take over
             if (currentTick >= limitingDeathTick)
             {
                 return true;            
@@ -100,7 +101,7 @@ namespace PlayerManager {
             }
 
             // Else, if we have died we can activate if our last death was later than the limiting death tick
-            // TODO this is a bit odd since you could save them one looop, choose not to play them, then they die early 
+            // TODO this is a bit odd since you could save them one looop, choose not to play them, then they die earlier
             //      and now you have 'wasted' that saving
             if (state == ThreadState.Inactive && limitingDeathTick < lastLoopDeathTick)
             {

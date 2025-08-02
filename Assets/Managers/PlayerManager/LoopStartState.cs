@@ -6,17 +6,9 @@ namespace PlayerManager {
     struct LoopStartState
     {
         // Need to store state of characters at start of loop
-        // For now, just transform
         public List<Vector3> characterPositions;
         public List<Quaternion> characterRotations;
-        public List<Character.CharacterState> characterStates; 
-
-        // public void()
-        // {
-            // characterPositions = new();
-            // characterRotations = new();
-            // characterStates = new();
-        // }
+        public List<Character.CharacterState> characterStates; // Alive or dead at start of loop
 
         public void SaveState(List<CharacterThread> threads)
         { 
