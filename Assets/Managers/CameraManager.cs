@@ -17,7 +17,7 @@ public class CameraManager : MonoBehaviour
         pointAction = InputSystem.actions.FindAction("Point");
     }
 
-    void LateUpdate()
+    void FixedUpdate()
     {
         Vector3 playerPosition = transform.position;
 
