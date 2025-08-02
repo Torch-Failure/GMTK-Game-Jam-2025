@@ -11,17 +11,10 @@ public class LoopManager : MonoBehaviour
         };
 
         public int loopLengthTicks = 1000; // How long each loop is
+        private int currentTick = 0; // Current tick in this thread of the loop
         public PlayerManager playerManager;
 
         private LoopState state = LoopState.ThreadPlaying;
-
-
-        void Start()
-        {
-            playerManager.loopLengthTicks = loopLengthTicks;
-            playerManager.characterThreadTimeUpEvent += PlayerManagerThreadTimeUp; 
-        }
-
 
         // Restores everything to where it was at the start of the loop
         // Player history should be preserved
@@ -29,7 +22,8 @@ public class LoopManager : MonoBehaviour
         {
             // Should reset loop on every manager or entity
             playerManager.RestartLoop();
-
+        
+            currentTick = 0;
         }
 
         // Should dispatch updates to pretty much everything else in the game depending on state
@@ -43,8 +37,14 @@ public class LoopManager : MonoBehaviour
                     break;
                 case LoopState.ThreadPlaying:
                     // Player is playing as a character
-                    playerManager.ThreadPlayingUpdate();
+                    playerManager.ThreadPlayingUpdate(currentTick);
                     break;
+            }
+            
+            currentTick++;
+            if (currentTick >= loopLengthTicks)
+            {
+                RestartLoop();
             }
         }
 
@@ -65,11 +65,5 @@ public class LoopManager : MonoBehaviour
         // Will move to next loop
         void IncrementLoop()
         {
-        }
-
-        private void PlayerManagerThreadTimeUp()
-        {
-            Debug.Log("Time up!");
-            RestartLoop();
         }
 }

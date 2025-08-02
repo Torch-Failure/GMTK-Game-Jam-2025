@@ -5,14 +5,6 @@ using System;
 
 public class PlayerManager : MonoBehaviour
 {
-
-    // These events talk to the loop manager
-    public event Action characterThreadTimeUpEvent;
-
-    public int loopLengthTicks;
-    private int currentTick;
-
-
     private struct PlayerInputRecord
     {
         public Vector2 move;
@@ -39,7 +31,6 @@ public class PlayerManager : MonoBehaviour
         {
             history.Add(record);
             threadTicks++;
-            // assert()
         }
 
         public void Reset()
@@ -77,10 +68,6 @@ public class PlayerManager : MonoBehaviour
         selectAction = InputSystem.actions.FindAction("Interact");
     }
 
-    public void PlayNextCharacter() {
-
-    }
-
     public void InternalUpdate()
     {
         if (attackAction.WasPressedThisFrame()) {
@@ -97,7 +84,7 @@ public class PlayerManager : MonoBehaviour
 
     }
 
-    public void ThreadPlayingUpdate()
+    public void ThreadPlayingUpdate(int loopTick)
     {
         PlayerInputRecord inputRecord = new();
         
@@ -116,23 +103,16 @@ public class PlayerManager : MonoBehaviour
         
         for (int i = 0; i < previousPlayers.Count; i++)
         {
-            if (currentTick >= inputHistory[i].Count) continue;
-            previousPlayers[i].transform.rotation = inputHistory[i][currentTick].rotation;
-            previousPlayers[i].Move(inputHistory[i][currentTick].move);
-            if (inputHistory[i][currentTick].doesAttack) previousPlayers[i].Attack();
+            if (loopTick >= inputHistory[i].Count) continue;
+            previousPlayers[i].transform.rotation = inputHistory[i][loopTick].rotation;
+            previousPlayers[i].Move(inputHistory[i][loopTick].move);
+            if (inputHistory[i][loopTick].doesAttack) previousPlayers[i].Attack();
         }
 
         if (inputHistory.Count == 0) {
             throw new System.Exception("Cannot record player input: inputHistory is empty.");
         }
         inputHistory[inputHistory.Count - 1].Add(inputRecord);
-
-        currentTick++;
-
-        if (currentTick > loopLengthTicks)
-        {
-            characterThreadTimeUpEvent?.Invoke();
-        }
     }
 
     
@@ -148,6 +128,5 @@ public class PlayerManager : MonoBehaviour
         // Set up new player.
         inputHistory.Add(new());
         currentPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Character>();
-        currentTick = 0;
     }
 }
