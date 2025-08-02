@@ -37,6 +37,19 @@ public class Character : MonoBehaviour
         }
     }
 
+    public Color GetCurrentColor()
+    {
+        switch(state)
+        {
+            case CharacterState.Alive:
+                return Color.white;
+            case CharacterState.Dead:
+                return Color.chocolate;
+        }
+
+        throw new InvalidOperationException($"Switch statement did not handle character state {state}");
+    }
+
     public void Die()
     {
         var collider = GetComponent<BoxCollider2D>();
