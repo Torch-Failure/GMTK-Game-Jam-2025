@@ -63,6 +63,11 @@ public class Enemy : Character
 
     public override void ThreadPlayingFixedUpdate()
     {
+        if (state == CharacterState.Dead)
+        {
+            return;
+        }
+
         base.ThreadPlayingFixedUpdate();
         switch (currentState)
         {

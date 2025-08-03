@@ -141,15 +141,15 @@ public class LoopManager : MonoBehaviour
         public void Unfreeze()
         {
             // TODO uncomment when adding rigid bodies
-            // playerManager.Unfreeze();
-            // enemyManager.Unfreeze();
+            playerManager.Unfreeze();
+            enemyManager.Unfreeze();
             projectileManager.Unfreeze();
         }
 
         public void Freeze()
         {
-            // playerManager.Freeze();
-            // enemyManager.Freeze();
+            playerManager.Freeze();
+            enemyManager.Freeze();
             projectileManager.Freeze();
         }
 }

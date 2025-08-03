@@ -13,7 +13,9 @@ public class EnemyManager : MonoBehaviour
         float alertTimer;
         int patrolNodeId;
         int ticksTillNextAttack;
-        Enemy.EnemyState state;
+        float health;
+        Enemy.EnemyState enemyState;
+        Character.CharacterState characterState;
 
         public SavedEnemyState(Enemy enemy)
         {
@@ -21,8 +23,10 @@ public class EnemyManager : MonoBehaviour
             rotation = enemy.transform.rotation;
             alertTimer = enemy.alertTimer;
             patrolNodeId = enemy.patrolNodeId;
-            state = enemy.currentState;
+            enemyState = enemy.currentState;
             ticksTillNextAttack = enemy.attackComponent.ticksTillNextAttack;
+            characterState = enemy.state;
+            health = enemy.CurrentHealth;
         }
 
         public void Load(Enemy enemy)
@@ -31,8 +35,17 @@ public class EnemyManager : MonoBehaviour
             enemy.transform.rotation = rotation;
             enemy.alertTimer = alertTimer;
             enemy.patrolNodeId = patrolNodeId;
-            enemy.currentState = state;
+            enemy.currentState = enemyState;
             enemy.attackComponent.ticksTillNextAttack = ticksTillNextAttack;    
+            if (enemy.state == Character.CharacterState.Dead)
+            {
+                if (characterState == Character.CharacterState.Alive)
+                {
+                    enemy.UnDie();
+                }
+            }
+
+            enemy.CurrentHealth = health;
         }
 
 
