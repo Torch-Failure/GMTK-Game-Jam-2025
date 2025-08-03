@@ -100,9 +100,9 @@ public class GameManager : MonoBehaviour
             UI.Pause();
             Debug.Log("Pause");
         } 
-        else if (replayAction.WasPressedThisFrame()) // Temp debug action.
+        else if (replayAction.WasPressedThisFrame()) // Cut a loop short - sets the loop length for this round.
         {
-            loopManager.RestartLoop();
+            loopManager.CutLoop();
         }
         loopManager.InternalUpdate();
     }

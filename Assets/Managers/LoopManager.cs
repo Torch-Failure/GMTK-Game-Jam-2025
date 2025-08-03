@@ -7,12 +7,15 @@ public class LoopManager : MonoBehaviour
         
         enum LoopState
         {
-            // When the u
             PlayerSelection,
             ThreadPlaying
         };
 
-        public int loopLengthTicks = 1000; // How long each loop is
+        [SerializeField] 
+        private int maxLoopLength = 200;
+
+        public int LoopNumber { get; private set; }
+        private int loopLengthTicks = 200; // How long each loop is
         private int currentTick = 0; // Current tick in this thread of the loop
         public PlayerManager.PlayerManager playerManager;
         public EnemyManager enemyManager;
@@ -109,6 +112,7 @@ public class LoopManager : MonoBehaviour
         void NextLoop()
         {
             Debug.Log("Next looop.....");
+            loopLengthTicks = maxLoopLength;
             playerManager.NextLoop();
             SaveStates();
 
@@ -151,5 +155,11 @@ public class LoopManager : MonoBehaviour
             // playerManager.Freeze();
             // enemyManager.Freeze();
             projectileManager.Freeze();
+        }
+
+        // CutLoop sets the loopLength to the current amount that has passed, ending the current cycle of the loop and cutting all players to this length for the round.
+        public void CutLoop() {
+            if (state == LoopState.ThreadPlaying)
+                loopLengthTicks = currentTick;
         }
 }
