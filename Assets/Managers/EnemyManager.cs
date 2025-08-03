@@ -80,11 +80,32 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void ThreadPlayingFixedUpdate(int loopTick)
+
+    public void Freeze()
     {
-        // Do nothing yet
+        foreach (var enemy in activeEnemies)
+        {
+            var rb = enemy.GetComponent<Rigidbody2D>();
+            if (rb == null)
+            {
+                throw new InvalidOperationException("Enemy rigid body not there");
+            }
+
+            rb.simulated = false;
+        }
     }
 
+    public void Unfreeze()
+    {
+        foreach (var enemy in activeEnemies)
+        {
+            var rb = enemy.GetComponent<Rigidbody2D>();
+            if (rb == null)
+            {
+                throw new InvalidOperationException("Enemy rigid body not there");
+            }
 
-
+            rb.simulated = true;
+        }
+    }
 }

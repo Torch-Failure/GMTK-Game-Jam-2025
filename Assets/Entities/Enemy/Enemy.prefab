@@ -102,13 +102,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackComponent: {fileID: 7199575504183361061}
-  speed: 10
+  speed: 2
   maxHealth: 100
   currentHealth: 100
   visionRange: 10
   visionAngle: 30
   visionRayCount: 20
-  alertDuration: 2
+  alertDuration: 0.4
   rotationSpeed: 10
   patrolNodeDistanceTolerance: 0.1
   patrolRoute: {fileID: 0}

@@ -77,6 +77,14 @@ public class Character : MonoBehaviour
 
     public virtual void Attack()
     {
+        if (attackComponent == null)
+        {
+            Debug.Log("Attack compoment is null");
+        }
+        if (transform.rotation == null)
+        {
+            Debug.Log("Transform rotation is null");
+        }
         attackComponent.Attack(transform.rotation);
     }
 }

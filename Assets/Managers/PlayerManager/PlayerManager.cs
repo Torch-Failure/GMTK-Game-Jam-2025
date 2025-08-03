@@ -310,5 +310,32 @@ namespace PlayerManager {
         {
             return GetActivatableThreads().Count > 0;
         }
+        public void Freeze()
+        {
+            foreach (var player in characterThreads)
+            {
+                var rb = player.threadCharacter.GetComponent<Rigidbody2D>();
+                if (rb == null)
+                {
+                    throw new InvalidOperationException("Player rigid body not there");
+                }
+
+                rb.simulated = false;
+            }
+        }
+
+        public void Unfreeze()
+        {
+            foreach (var player in characterThreads)
+            {
+                var rb = player.threadCharacter.GetComponent<Rigidbody2D>();
+                if (rb == null)
+                {
+                    throw new InvalidOperationException("Player rigid body not there");
+                }
+
+                rb.simulated = true;
+            }
+        }
     }
 }

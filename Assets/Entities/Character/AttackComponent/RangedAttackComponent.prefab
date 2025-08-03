@@ -48,6 +48,7 @@ MonoBehaviour:
   attackSpeed: 0
   projectile: {fileID: 3023439978875918853, guid: d03c238dbc2d05a43829115e716dbe8f, type: 3}
   projectileSpawnPosition: {fileID: 965316989900577216}
+  projectileManager: {fileID: 3400028253187640531, guid: 7406d8ca89d93d24cb873b1f17ae324b, type: 3}
 --- !u!1 &7697564416610204720
 GameObject:
   m_ObjectHideFlags: 0
