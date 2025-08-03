@@ -73,6 +73,8 @@ namespace PlayerManager {
             loopStartState.characterPositions = new();
             loopStartState.characterRotations = new();
             loopStartState.characterStates = new();
+            loopStartState.characterHealths = new();
+            loopStartState.characterAttackCooldowns = new();
             
             SaveLoopStart();
         }
@@ -194,6 +196,11 @@ namespace PlayerManager {
 
         public void ThreadPlayingFixedUpdate(int loopTick)
         {
+            foreach (var thread in characterThreads)
+            {
+                thread.threadCharacter.ThreadPlayingFixedUpdate();
+            }
+
             currentLoopTick = loopTick;
             bool playerControlActive = activeThread.IsUnderPlayerControl(currentLoopTick);
 

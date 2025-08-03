@@ -9,12 +9,17 @@ namespace PlayerManager {
         public List<Vector3> characterPositions;
         public List<Quaternion> characterRotations;
         public List<Character.CharacterState> characterStates; // Alive or dead at start of loop
+        public List <float> characterHealths;
+        public List <int> characterAttackCooldowns;
+
 
         public void SaveState(List<CharacterThread> threads)
         { 
             characterPositions.Clear();
             characterRotations.Clear();
             characterStates.Clear();
+            characterHealths.Clear();
+            characterAttackCooldowns.Clear();
 
             foreach (var thread in  threads)
             {
@@ -22,6 +27,8 @@ namespace PlayerManager {
                 characterPositions.Add(character.transform.position);
                 characterRotations.Add(character.transform.rotation);
                 characterStates.Add(character.state);
+                characterHealths.Add(character.CurrentHealth);
+                characterAttackCooldowns.Add(character.attackComponent.ticksTillNextAttack);
             }
         }
 
@@ -32,10 +39,8 @@ namespace PlayerManager {
                 var character = threads[i].threadCharacter;
                 character.transform.position = characterPositions[i];
                 character.transform.rotation = characterRotations[i];
-
-                Debug.Log($"Character state is: {character.state}");
-                Debug.Log($"Saved state is: {characterStates[i]}");
-
+                character.CurrentHealth = characterHealths[i];
+                character.attackComponent.ticksTillNextAttack = characterAttackCooldowns[i];
 
                 if (characterStates[i] == Character.CharacterState.Alive && character.state == Character.CharacterState.Dead)
                 {
