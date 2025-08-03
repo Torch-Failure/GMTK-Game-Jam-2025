@@ -15,6 +15,7 @@ public class LoopManager : MonoBehaviour
         public int loopLengthTicks = 1000; // How long each loop is
         private int currentTick = 0; // Current tick in this thread of the loop
         public PlayerManager.PlayerManager playerManager;
+        public EnemyManager enemyManager;
 
         private LoopState state = LoopState.PlayerSelection;
 
@@ -77,6 +78,7 @@ public class LoopManager : MonoBehaviour
             Debug.Log("Restarting loop...");
             // This can eventually operate on a list of common interfaces/super classes
             playerManager.LoadLoopStart();
+            enemyManager.LoadLoopStart();
             currentTick = 0;
         }
 
@@ -86,6 +88,7 @@ public class LoopManager : MonoBehaviour
             Debug.Log("Next looop.....");
             playerManager.NextLoop();
             playerManager.SaveLoopStart();
+            enemyManager.SaveLoopStart();
         }
 
         private void HandleLoopEnd()

@@ -14,14 +14,14 @@ public class Enemy : Character
 
     [SerializeField] private LayerMask obstacleMask;
 
-    private float alertTimer = 0f;
-    private int patrolNodeId  = 0;
+    public float alertTimer = 0f;
+    public int patrolNodeId  = 0;
 
 
     public enum EnemyState { Idle, Patrolling, Alert, Attacking }
 
     private EnemyState _currentState = EnemyState.Idle;
-    private EnemyState currentState
+    public EnemyState currentState
     {
         get => _currentState;
         set
