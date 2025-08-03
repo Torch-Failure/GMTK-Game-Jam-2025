@@ -3,22 +3,27 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 
-    public float lifetimeSeconds = 2f;
+    public int lifeTimeTicks;
     public float speed;
     public float damage;
+    public int currentLifeTime = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Destroy(gameObject, lifetimeSeconds);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         rb.linearVelocity = transform.up * speed;
     }
 
     // Update is called once per frame
-    void Update()
+    public void ThreadPlayingFixedUpdate()
     {
-        
+        currentLifeTime++;
+        Debug.Log($"Current lifetime is {currentLifeTime}. Max lifetime is {lifeTimeTicks}");
+        if (lifeTimeTicks <= currentLifeTime)
+        {
+            Destroy(gameObject);
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -39,5 +44,10 @@ public class Projectile : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void OnDestroy()
+    {
+        ProjectileManager.instance.RemoveProjectile(this);
     }
 }

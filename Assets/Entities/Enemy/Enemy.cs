@@ -14,14 +14,14 @@ public class Enemy : Character
 
     [SerializeField] private LayerMask obstacleMask;
 
-    private float alertTimer = 0f;
-    private int patrolNodeId  = 0;
+    public float alertTimer = 0f;
+    public int patrolNodeId  = 0;
 
 
     public enum EnemyState { Idle, Patrolling, Alert, Attacking }
 
     private EnemyState _currentState = EnemyState.Idle;
-    private EnemyState currentState
+    public EnemyState currentState
     {
         get => _currentState;
         set
@@ -61,7 +61,7 @@ public class Enemy : Character
         currentState = defaultState;
     }
 
-    void Update()
+    public void ThreadPlayingFixedUpdate()
     {
         switch (currentState)
         {
@@ -126,7 +126,7 @@ public class Enemy : Character
         }
         GameObject closestPlayer = Helpers.GetClosestObject(players, transform.position);
         rotateTowardsTarget(closestPlayer);
-        alertTimer += Time.deltaTime;
+        alertTimer += Time.fixedDeltaTime;
         if (alertTimer >= alertDuration)
         {
             currentState = EnemyState.Attacking;
@@ -189,7 +189,7 @@ public class Enemy : Character
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
             targetRotation,
-            rotationSpeed * Time.deltaTime
+            rotationSpeed * Time.fixedDeltaTime
         );
     }
 }

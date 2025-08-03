@@ -102,17 +102,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackComponent: {fileID: 7199575504183361061}
-  speed: 10
+  speed: 2
   maxHealth: 100
   currentHealth: 100
   visionRange: 10
   visionAngle: 30
-  visionRayCount: 5
-  alertDuration: 2
+  visionRayCount: 20
+  alertDuration: 0.4
   rotationSpeed: 10
+  patrolNodeDistanceTolerance: 0.1
+  patrolRoute: {fileID: 0}
+  defaultState: 0
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  alertTimer: 0
+  patrolNodeId: 0
 --- !u!1001 &4011879042859960562
 PrefabInstance:
   m_ObjectHideFlags: 0

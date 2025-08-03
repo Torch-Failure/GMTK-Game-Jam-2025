@@ -52,7 +52,11 @@ namespace PlayerManager {
             cycleNextAction = InputSystem.actions.FindAction("Next");
             cyclePreviousAction = InputSystem.actions.FindAction("Previous");
             selectAction = InputSystem.actions.FindAction("Interact");
+        }
 
+        // Called by loop manager at start of the very first loop
+        public void InitLoop()
+        {
             // Simple test implementation for creating characters
             for (int i = 0; i < numberOfCharacters; i++)
             {
@@ -62,14 +66,14 @@ namespace PlayerManager {
                 CharacterThread newThread = new(currentPlayer);
                 characterThreads.Add(newThread);
             }
+            
+            // Ensure this is not null before first fixed update
+            activeThread = characterThreads[selectedCharacterIndex];
 
             loopStartState.characterPositions = new();
             loopStartState.characterRotations = new();
             loopStartState.characterStates = new();
             
-            // Ensure this is not null before first fixed update
-            activeThread = characterThreads[selectedCharacterIndex];
-
             SaveLoopStart();
         }
 
@@ -305,6 +309,33 @@ namespace PlayerManager {
         public bool CanActivateCharacter()
         {
             return GetActivatableThreads().Count > 0;
+        }
+        public void Freeze()
+        {
+            foreach (var player in characterThreads)
+            {
+                var rb = player.threadCharacter.GetComponent<Rigidbody2D>();
+                if (rb == null)
+                {
+                    throw new InvalidOperationException("Player rigid body not there");
+                }
+
+                rb.simulated = false;
+            }
+        }
+
+        public void Unfreeze()
+        {
+            foreach (var player in characterThreads)
+            {
+                var rb = player.threadCharacter.GetComponent<Rigidbody2D>();
+                if (rb == null)
+                {
+                    throw new InvalidOperationException("Player rigid body not there");
+                }
+
+                rb.simulated = true;
+            }
         }
     }
 }

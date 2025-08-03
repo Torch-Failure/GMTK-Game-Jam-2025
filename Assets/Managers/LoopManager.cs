@@ -15,12 +15,16 @@ public class LoopManager : MonoBehaviour
         public int loopLengthTicks = 1000; // How long each loop is
         private int currentTick = 0; // Current tick in this thread of the loop
         public PlayerManager.PlayerManager playerManager;
+        public EnemyManager enemyManager;
+        public ProjectileManager projectileManager;
 
         private LoopState state = LoopState.PlayerSelection;
 
         void Start()
         {
             playerManager.OnActivePlayerKilled += HandleActivePlayerDeath;
+            InitLoop();
+            Freeze();
         }
 
         // Should dispatch updates to pretty much everything else in the game depending on state
@@ -35,6 +39,8 @@ public class LoopManager : MonoBehaviour
                 case LoopState.ThreadPlaying:
                     // Player is playing as a character
                     playerManager.ThreadPlayingFixedUpdate(currentTick);
+                    enemyManager.ThreadPlayingFixedUpdate();
+                    projectileManager.ThreadPlayingFixedUpdate();
                     currentTick++;
                     if (currentTick >= loopLengthTicks)
                     {
@@ -53,6 +59,8 @@ public class LoopManager : MonoBehaviour
                     playerManager.CharacterSelectionUpdate();
                     if (playerManager.isCharacterSelected)
                     {
+                        // At this point physics is frozen, so unfreeze
+                        Unfreeze();
                         state = LoopState.ThreadPlaying;
                         UI.SetState(UIState.ThreadPlaying);
                     }
@@ -70,6 +78,14 @@ public class LoopManager : MonoBehaviour
             HandleLoopEnd();
         }
 
+        public void InitLoop()
+        {
+            projectileManager = ProjectileManager.instance;
+            playerManager.InitLoop();
+            enemyManager.InitLoop();
+            projectileManager.InitLoop();
+        }
+
         // Restores everything to where it was at the start of the current loop
         // Player history should be preserved
         public void RestartLoop()
@@ -77,7 +93,16 @@ public class LoopManager : MonoBehaviour
             Debug.Log("Restarting loop...");
             // This can eventually operate on a list of common interfaces/super classes
             playerManager.LoadLoopStart();
+            enemyManager.LoadLoopStart();
+            projectileManager.LoadLoopStart();
             currentTick = 0;
+        }
+
+        void SaveStates()
+        {
+            playerManager.SaveLoopStart();
+            enemyManager.SaveLoopStart();
+            projectileManager.SaveLoopStart();
         }
 
         // Will move to next loop
@@ -85,7 +110,8 @@ public class LoopManager : MonoBehaviour
         {
             Debug.Log("Next looop.....");
             playerManager.NextLoop();
-            playerManager.SaveLoopStart();
+            SaveStates();
+
         }
 
         private void HandleLoopEnd()
@@ -101,6 +127,8 @@ public class LoopManager : MonoBehaviour
             }
 
             RestartLoop();
+            Freeze();
+
             state = LoopState.PlayerSelection;
             UI.SetState(UIState.PlayerSelection);
 
@@ -108,5 +136,20 @@ public class LoopManager : MonoBehaviour
             {
                 throw new InvalidOperationException("No characters available after incrementing loop. Game should end but thats not done yet.");
             }
+        }
+
+        public void Unfreeze()
+        {
+            // TODO uncomment when adding rigid bodies
+            // playerManager.Unfreeze();
+            // enemyManager.Unfreeze();
+            projectileManager.Unfreeze();
+        }
+
+        public void Freeze()
+        {
+            // playerManager.Freeze();
+            // enemyManager.Freeze();
+            projectileManager.Freeze();
         }
 }
