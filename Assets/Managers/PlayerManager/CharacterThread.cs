@@ -45,11 +45,7 @@ namespace PlayerManager {
                 // If we are active and die, this is the furthest we have
                 // got 'for realsies' (meaning while under player control)
                 // This is the tick to beat!
-                if (limitingDeathTick > currentTick)
-                {
-                    throw new InvalidOperationException("Shouldn't be able to die while active earlier than you did before");
-                } 
-                limitingDeathTick = currentTick;
+                limitingDeathTick = Math.Max(currentTick, limitingDeathTick);
             }
         }
 
