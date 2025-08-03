@@ -42,7 +42,7 @@ namespace PlayerManager {
             // If we died while active, update the limiting tick
             if (state == ThreadState.Active)
             {
-                // If we are active and die, this is the furthest we have
+                // If we are active and die, and this is the furthest we have
                 // got 'for realsies' (meaning while under player control)
                 // This is the tick to beat!
                 limitingDeathTick = Math.Max(currentTick, limitingDeathTick);
