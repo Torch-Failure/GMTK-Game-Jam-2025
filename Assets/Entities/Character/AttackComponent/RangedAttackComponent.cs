@@ -11,6 +11,13 @@ public class RangedAttackComponent : AttackComponent
 
     public override void Attack(Quaternion direction)
     {
+        if (ticksTillNextAttack != 0)
+        {
+            return;
+        }
+
+        ticksTillNextAttack = attackSpeedTicks;
+
         GameObject currentProjectile = Instantiate(projectile, projectileSpawnPosition.position, projectileSpawnPosition.rotation);
         currentProjectile.tag = transform.parent.gameObject.tag;
 

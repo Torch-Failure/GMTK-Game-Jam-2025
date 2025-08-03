@@ -138,6 +138,10 @@ PrefabInstance:
       propertyPath: attackSpeed
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6072833056684865239, guid: e34efd1f298df4dd9a3b69621ce5afc3, type: 3}
+      propertyPath: attackSpeedTicks
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 6178755660517568266, guid: e34efd1f298df4dd9a3b69621ce5afc3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

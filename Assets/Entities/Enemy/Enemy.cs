@@ -61,8 +61,9 @@ public class Enemy : Character
         currentState = defaultState;
     }
 
-    public void ThreadPlayingFixedUpdate()
+    public override void ThreadPlayingFixedUpdate()
     {
+        base.ThreadPlayingFixedUpdate();
         switch (currentState)
         {
             case EnemyState.Idle:
