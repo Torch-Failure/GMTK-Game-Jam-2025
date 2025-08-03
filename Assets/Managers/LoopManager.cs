@@ -22,6 +22,7 @@ public class LoopManager : MonoBehaviour
         void Start()
         {
             playerManager.OnActivePlayerKilled += HandleActivePlayerDeath;
+            InitLoop();
         }
 
         // Should dispatch updates to pretty much everything else in the game depending on state
@@ -71,6 +72,12 @@ public class LoopManager : MonoBehaviour
             HandleLoopEnd();
         }
 
+        public void InitLoop()
+        {
+            playerManager.InitLoop();
+            enemyManager.InitLoop();
+        }
+
         // Restores everything to where it was at the start of the current loop
         // Player history should be preserved
         public void RestartLoop()
@@ -82,13 +89,19 @@ public class LoopManager : MonoBehaviour
             currentTick = 0;
         }
 
+        void SaveStates()
+        {
+            playerManager.SaveLoopStart();
+            enemyManager.SaveLoopStart();
+        }
+
         // Will move to next loop
         void NextLoop()
         {
             Debug.Log("Next looop.....");
             playerManager.NextLoop();
-            playerManager.SaveLoopStart();
-            enemyManager.SaveLoopStart();
+            SaveStates();
+
         }
 
         private void HandleLoopEnd()

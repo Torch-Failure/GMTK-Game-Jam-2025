@@ -35,16 +35,15 @@ public class EnemyManager : MonoBehaviour
 
     };
 
-
     // Should be all enemies, not just alive or dead
     Enemy[] activeEnemies;
     SavedEnemyState[] savedStates;
 
-    void Start()
+    public void InitLoop()
     {
         activeEnemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
         savedStates = new SavedEnemyState[activeEnemies.Length];
-        
+        SaveLoopStart();
     }
 
     public void SaveLoopStart()
