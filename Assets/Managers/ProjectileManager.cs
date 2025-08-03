@@ -115,7 +115,6 @@ public class ProjectileManager : MonoBehaviour
         // Destroy all active projectiles
         foreach(var proj in projectiles)
         {
-            Debug.Log("killing all projectiles");
             Destroy(proj.projectile.gameObject);
         }
 

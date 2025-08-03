@@ -61,8 +61,9 @@ public class Enemy : Character
         currentState = defaultState;
     }
 
-    public void ThreadPlayingFixedUpdate()
+    public override void ThreadPlayingFixedUpdate()
     {
+        base.ThreadPlayingFixedUpdate();
         switch (currentState)
         {
             case EnemyState.Idle:
@@ -165,7 +166,6 @@ public class Enemy : Character
             RaycastHit2D hit = Physics2D.Raycast(origin, direction, visionRange, obstacleMask);
             if (hit.collider != null)
             {
-                Debug.Log($"S: {hit.collider.gameObject.name}");
                 if (hit.collider.CompareTag("Player"))
                 {
                     players.Add(hit.collider.gameObject);

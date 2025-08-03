@@ -4,7 +4,7 @@ using System;
 public class Character : MonoBehaviour
 {
     [SerializeField]
-    private AttackComponent attackComponent;
+    public AttackComponent attackComponent;
     [SerializeField]
     private float speed = 10f;
     [SerializeField]
@@ -16,7 +16,7 @@ public class Character : MonoBehaviour
 
     public float Speed { get { return speed; } }
     public float MaxHealth { get { return maxHealth; } }
-    public float CurrentHealth { get { return currentHealth; } }
+    public float CurrentHealth { get { return currentHealth; } set {currentHealth = value;}}
     public event Action<Character> OnDeath;
 
     public enum CharacterState {Alive, Dead};
@@ -74,6 +74,12 @@ public class Character : MonoBehaviour
         currentHealth = maxHealth;
         state = CharacterState.Alive;
     }
+
+    public virtual void ThreadPlayingFixedUpdate()
+    {
+        attackComponent.ThreadPlayingFixedUpdate();
+    }
+
 
     public virtual void Attack()
     {

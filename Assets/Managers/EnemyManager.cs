@@ -12,6 +12,7 @@ public class EnemyManager : MonoBehaviour
         Quaternion rotation;
         float alertTimer;
         int patrolNodeId;
+        int ticksTillNextAttack;
         Enemy.EnemyState state;
 
         public SavedEnemyState(Enemy enemy)
@@ -21,6 +22,7 @@ public class EnemyManager : MonoBehaviour
             alertTimer = enemy.alertTimer;
             patrolNodeId = enemy.patrolNodeId;
             state = enemy.currentState;
+            ticksTillNextAttack = enemy.attackComponent.ticksTillNextAttack;
         }
 
         public void Load(Enemy enemy)
@@ -29,7 +31,8 @@ public class EnemyManager : MonoBehaviour
             enemy.transform.rotation = rotation;
             enemy.alertTimer = alertTimer;
             enemy.patrolNodeId = patrolNodeId;
-            enemy.currentState = state        ;    
+            enemy.currentState = state;
+            enemy.attackComponent.ticksTillNextAttack = ticksTillNextAttack;    
         }
 
 
