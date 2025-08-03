@@ -107,12 +107,17 @@ MonoBehaviour:
   currentHealth: 100
   visionRange: 10
   visionAngle: 30
-  visionRayCount: 5
+  visionRayCount: 20
   alertDuration: 2
   rotationSpeed: 10
+  patrolNodeDistanceTolerance: 0.1
+  patrolRoute: {fileID: 0}
+  defaultState: 0
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  alertTimer: 0
+  patrolNodeId: 0
 --- !u!1001 &4011879042859960562
 PrefabInstance:
   m_ObjectHideFlags: 0

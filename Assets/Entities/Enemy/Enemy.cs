@@ -61,7 +61,7 @@ public class Enemy : Character
         currentState = defaultState;
     }
 
-    void Update()
+    public void ThreadPlayingFixedUpdate()
     {
         switch (currentState)
         {
@@ -126,7 +126,7 @@ public class Enemy : Character
         }
         GameObject closestPlayer = Helpers.GetClosestObject(players, transform.position);
         rotateTowardsTarget(closestPlayer);
-        alertTimer += Time.deltaTime;
+        alertTimer += Time.fixedDeltaTime;
         if (alertTimer >= alertDuration)
         {
             currentState = EnemyState.Attacking;
@@ -189,7 +189,7 @@ public class Enemy : Character
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
             targetRotation,
-            rotationSpeed * Time.deltaTime
+            rotationSpeed * Time.fixedDeltaTime
         );
     }
 }

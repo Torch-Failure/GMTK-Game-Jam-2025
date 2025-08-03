@@ -37,6 +37,7 @@ public class LoopManager : MonoBehaviour
                 case LoopState.ThreadPlaying:
                     // Player is playing as a character
                     playerManager.ThreadPlayingFixedUpdate(currentTick);
+                    enemyManager.ThreadPlayingFixedUpdate();
                     currentTick++;
                     if (currentTick >= loopLengthTicks)
                     {

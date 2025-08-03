@@ -46,6 +46,14 @@ public class EnemyManager : MonoBehaviour
         SaveLoopStart();
     }
 
+    public void ThreadPlayingFixedUpdate()
+    {
+        foreach (var enemy in activeEnemies)
+        {
+            enemy.ThreadPlayingFixedUpdate();
+        }
+    }
+
     public void SaveLoopStart()
     {
         if (activeEnemies.Length != savedStates.Length)
