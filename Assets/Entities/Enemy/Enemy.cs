@@ -166,7 +166,6 @@ public class Enemy : Character
             RaycastHit2D hit = Physics2D.Raycast(origin, direction, visionRange, obstacleMask);
             if (hit.collider != null)
             {
-                Debug.Log($"S: {hit.collider.gameObject.name}");
                 if (hit.collider.CompareTag("Player"))
                 {
                     players.Add(hit.collider.gameObject);

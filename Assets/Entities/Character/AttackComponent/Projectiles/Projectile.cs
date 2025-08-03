@@ -19,7 +19,6 @@ public class Projectile : MonoBehaviour
     public void ThreadPlayingFixedUpdate()
     {
         currentLifeTime++;
-        Debug.Log($"Current lifetime is {currentLifeTime}. Max lifetime is {lifeTimeTicks}");
         if (lifeTimeTicks <= currentLifeTime)
         {
             Destroy(gameObject);
@@ -35,7 +34,6 @@ public class Projectile : MonoBehaviour
             // If we are hitting the other 'side' or if we can hit friendlies
             if (this.tag != character.tag || GameManager.enableFriendlyFire)
             {
-                Debug.Log("Hit something");
                 character.TakeDamage(damage);
             }
         }

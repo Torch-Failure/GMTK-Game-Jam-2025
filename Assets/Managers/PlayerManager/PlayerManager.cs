@@ -74,6 +74,7 @@ namespace PlayerManager {
             loopStartState.characterRotations = new();
             loopStartState.characterStates = new();
             loopStartState.characterHealths = new();
+            loopStartState.characterAttackCooldowns = new();
             
             SaveLoopStart();
         }
